@@ -22,7 +22,7 @@ const options = {
   showLoading: true,
   // loading提醒文字
   loadingMsg: '加载中',
-  // 需要授权才能请求 默认放开
+  // 需要授权才能请求 默认放开 原始值为false
   auth: false,
   // ...
 };

@@ -36,24 +36,25 @@ export async function ShoproInit() {
   // if (process.env.NODE_ENV === 'development') {
   //   ShoproDebug();
   // }
-  await sheep.$api.user.recordLogin();
-  // 获取微信授权code
-  /* #ifdef H5 */
-  const code = getUrlCode().code;
-  if (!code && !sheep.$store('app').authInfo ){
-    if (!sheep.$store('user').isLogin){
-      let appid = "wx0a5f3d7cabd3ebbf"; //微信APPid
-      window.location.href =
-          "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
-          appid +
-          "&redirect_uri=" + encodeURIComponent('https://mall.ichengle.top/uni/#/') +
-          "&response_type=code&scope=snsapi_base#wechat_redirect";
-    }
-  }else {
-    const data = Base64.encode(JSON.stringify({code}));
-    sheep.$store('app').authInfo = await sheep.$api.user.getWechatUserAuth(data);
-  }
-  /* #endif */
+
+  // await sheep.$api.user.recordLogin();
+  // // 获取微信授权code
+  // /* #ifdef H5 */
+  // const code = getUrlCode().code;
+  // if (!code && !sheep.$store('app').authInfo ){
+  //   if (!sheep.$store('user').isLogin){
+  //     let appid = "wx0a5f3d7cabd3ebbf"; //微信APPid
+  //     window.location.href =
+  //         "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
+  //         appid +
+  //         "&redirect_uri=" + encodeURIComponent('https://mall.ichengle.top/uni/#/') +
+  //         "&response_type=code&scope=snsapi_base#wechat_redirect";
+  //   }
+  // }else {
+  //   const data = Base64.encode(JSON.stringify({code}));
+  //   sheep.$store('app').authInfo = await sheep.$api.user.getWechatUserAuth(data);
+  // }
+  // /* #endif */
 
 }
 
