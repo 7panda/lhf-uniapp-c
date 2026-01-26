@@ -1,5 +1,5 @@
 {
-  "name": "星品购",
+  "name": "全屋成品家居",
   "appid": "__UNI__082C0BA",
   "description": "应用描述",
   "versionName": "1.0.7",
@@ -185,7 +185,7 @@
     "versionCode": 100
   },
   "mp-weixin": {
-    "appid": "wxf336d6b2889047c1",
+    "appid": "wx30cada685473552f",
     "setting": {
       "urlCheck": false,
       "minified": true,
