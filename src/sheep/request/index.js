@@ -89,6 +89,18 @@ http.interceptors.request.use(
     }
     const token = uni.getStorageSync('token');
     if (token) config.header['Authorization'] = token;
+
+    // 从环境变量中读取 dept_id 并添加到请求参数中
+    // 注意：对于不需要身份验证的公共接口，我们仍然可以传递 dept_id 参数
+    // 因为我们已经在后端为这些接口提供了公共访问方法
+    const deptId = process.env.SHOPRO_DEPT_ID;
+    if (deptId) {
+      if (!config.params) {
+        config.params = {};
+      }
+      config.params.dept_id = deptId;
+    }
+
     return config;
   },
   (error) => {
