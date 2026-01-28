@@ -25,7 +25,7 @@
             dotStyle="tag"
             imageMode="widthFix"
             dotCur="bg-mask-40"
-            :seizeHeight="750"
+            :seizeHeight="450"
           />
 
           <!-- 价格+标题 -->
@@ -109,7 +109,7 @@
         <!-- 详情tabbar -->
         <detail-tabbar v-model="state.goodsInfo">
           <!-- TODO: 缺货中 已售罄 判断 设计-->
-          <view class="buy-box ss-flex ss-col-center ss-p-r-20" v-if="state.goodsInfo.totalStock > 0">
+          <!-- <view class="buy-box ss-flex ss-col-center ss-p-r-20" v-if="state.goodsInfo.totalStock > 0">
             <button
               class="ss-reset-button add-btn ui-Shadow-Main"
               @tap="state.showSelectSku = true"
@@ -125,7 +125,7 @@
           </view>
           <view class="buy-box ss-flex ss-col-center ss-p-r-20" v-else>
             <button class="ss-reset-button disabled-btn" disabled> 已售罄 </button>
-          </view>
+          </view> -->
         </detail-tabbar>
         <s-coupon-get
           v-model="state.couponInfo"
@@ -180,8 +180,18 @@
 
   // 规格变更
   function onSkuChange(e) {
-    console.log('e',e)
+    console.log('规格变更:', e);
     state.selectedSkuPrice = e;
+    
+    // 如果选中的 SKU 有专属图片，则更新轮播图主图
+    if (e && e.pic) {
+      const newSwiper = formatGoodsSwiper([e.pic]);
+      if (newSwiper.length > 0) {
+        // 将 SKU 图片插入轮播图首位
+        const existingImages = state.goodsSwiper.filter(item => item.src !== newSwiper[0].src);
+        state.goodsSwiper = [...newSwiper, ...existingImages];
+      }
+    }
   }
 
   // 添加购物车
@@ -262,9 +272,18 @@
       console.log('商品数据：', res)
       state.skeletonLoading = false;
       state.goodsInfo = res;
-      state.goodsSwiper = formatGoodsSwiper(state.goodsInfo.product.albumPics.split(','));
+      const albumPics = res?.product?.albumPics;
+      let albumList = [];
+      if (Array.isArray(albumPics)) {
+        albumList = albumPics;
+      } else if (typeof albumPics === 'string' && albumPics.trim()) {
+        albumList = albumPics.split(',');
+      } else if (res?.product?.pic) {
+        albumList = [res.product.pic];
+      }
+      state.goodsSwiper = formatGoodsSwiper(albumList); // 商品轮播图
       let totalStock = 0;
-      res.skus.forEach(it=>{
+      (res.skus || []).forEach(it=>{
         totalStock += it.stock;
       })
       state.goodsInfo.totalStock = totalStock;

@@ -90,25 +90,26 @@ http.interceptors.request.use(
     const token = uni.getStorageSync('token');
     if (token) config.header['Authorization'] = token;
 
-    // 从环境变量中读取 dept_id 并添加到请求参数中
-    // 注意：对于不需要身份验证的公共接口，我们仍然可以传递 dept_id 参数
-    // 因为我们已经在后端为这些接口提供了公共访问方法
+    // 从环境变量中读取 dept_id 并添加到请求参数中（双写：驼峰+蛇形）
+    // 优先使用 VITE_ 前缀（Vite 标准），回退到 SHOPRO_ 前缀
     const deptId = import.meta.env.VITE_SHOPRO_DEPT_ID || import.meta.env.SHOPRO_DEPT_ID;
     if (deptId) {
-      // 对于 GET 请求，添加到 URL 参数
+      // 对于 GET 请求，添加到 URL 参数（双写）
       if (!config.params) {
         config.params = {};
       }
-      config.params.dept_id = deptId;
+      config.params.deptId = deptId;  // 驼峰命名
+      config.params.dept_id = deptId; // 蛇形命名
 
-      // 对于 POST 请求，添加到请求体中（使用一致的蛇形命名）
+      // 对于 POST 请求，添加到请求体中（双写）
       if (config.method.toLowerCase() === 'post') {
         config.data = config.data || {};
         if (typeof config.data === 'object') {
-          config.data.dept_id = deptId;
+          config.data.deptId = deptId;  // 驼峰命名
+          config.data.dept_id = deptId; // 蛇形命名
         }
       }
-      console.log('🔧 [API请求] 部门ID已注入:', { deptId, url: config.url, method: config.method });
+      console.log('🔧 [API请求] 部门ID已双写注入:', { deptId, url: config.url, method: config.method });
     }
 
     return config;

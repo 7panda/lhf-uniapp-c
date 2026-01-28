@@ -12,13 +12,15 @@
 			<!--      </view>-->
 
 			<!-- 分类 -->
-			<!--      <view class="category-content">-->
-			<!--        <view class="category-item" v-for="(it,idx) in categoryList"-->
-			<!--              @tap="sheep.$router.go('/pages/goods/list', { categoryId: it.id })">-->
-			<!--          <image :src="it.icon" class="ct-icon"/>-->
-			<!--          <view class="ct-text">{{it.name}}</view>-->
-			<!--        </view>-->
-			<!--      </view>-->
+			<template v-if="false">
+				<view class="category-content">
+					<view class="category-item" v-for="(it,idx) in categoryList"
+						@tap="sheep.$router.go('/pages/goods/list', { categoryId: it.id })">
+						<image :src="it.icon" class="ct-icon" />
+						<view class="ct-text">{{it.name}}</view>
+					</view>
+				</view>
+			</template>
 
 			<!-- 广告模块 -->
 			<!--      <s-popup-image />-->
@@ -152,15 +154,15 @@
 		//#endif
 	});
 	onShareAppMessage((res) => {
-		let shareData = {
-			title: '邀请好友领取海量现金券!',
-			desc: '我正在使用xxxApp，赶紧跟我一起来体验！',
-			link: "https://mall.ichengle.top/uni/",
-			imgUrl: 'https://bjetxgzv.cdn.bspapp.com/VKCEYUGU-uni-app-doc/d8590190-4f28-11eb-b680-7980c8a877b8.png'
-		}
-		return {
-			...shareData
-		}
+		// let shareData = {
+		// 	title: '邀请好友领取海量现金券!',
+		// 	desc: '我正在使用xxxApp，赶紧跟我一起来体验！',
+		// 	link: "https://mall.ichengle.top/uni/",
+		// 	imgUrl: 'https://bjetxgzv.cdn.bspapp.com/VKCEYUGU-uni-app-doc/d8590190-4f28-11eb-b680-7980c8a877b8.png'
+		// }
+		// return {
+		// 	...shareData
+		// }
 	});
 	// 下拉刷新
 	onPullDownRefresh(() => {
@@ -179,12 +181,12 @@
 	function setOpenShare() {
 		let currentUrl = location.href //获取当前页面链接
 
-		let shareData = {
-			title: '邀请好友领取海量现金券!',
-			desc: '我正在使用xxxApp，赶紧跟我一起来体验！',
-			link: "https://mall.ichengle.top/uni/",
-			imgUrl: 'https://bjetxgzv.cdn.bspapp.com/VKCEYUGU-uni-app-doc/d8590190-4f28-11eb-b680-7980c8a877b8.png'
-		}
+		// let shareData = {
+			// title: '邀请好友领取海量现金券!',
+			// desc: '我正在使用xxxApp，赶紧跟我一起来体验！',
+			// link: "https://mall.ichengle.top/uni/",
+			// imgUrl: 'https://bjetxgzv.cdn.bspapp.com/VKCEYUGU-uni-app-doc/d8590190-4f28-11eb-b680-7980c8a877b8.png'
+		// }
 		console.log("更新分享", shareData)
 		weixin.updateShareInfo(shareData);
 	}

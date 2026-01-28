@@ -21,14 +21,26 @@
       },
     },
   });
+  const safeParseJson = (value, fallback) => {
+    if (typeof value !== 'string') return fallback;
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return fallback;
+    }
+  };
+
   const value = computed(() => {
     let str = '';
     if (props.modelValue) {
-      const obj = JSON.parse(props.modelValue);
-      Object.keys(obj).forEach(key=>{
-        str += key + "：" + obj[key] + ' ';
-      })
-    } else {
+      const obj = safeParseJson(props.modelValue, null);
+      if (obj && typeof obj === 'object') {
+        Object.keys(obj).forEach((key) => {
+          str += key + '：' + obj[key] + ' ';
+        });
+      }
+    }
+    if (!str) {
       str = '请选择商品规格';
     }
     return str;

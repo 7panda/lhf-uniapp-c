@@ -49,9 +49,9 @@
           <view class="sku-item ss-m-b-20" v-for="sku1 in productAttrList" :key="sku1.id">
             <view class="label-text ss-m-b-20">{{ sku1.name }}</view>
             <view class="ss-flex ss-col-center ss-flex-wrap">
-              <button
+                <button
                   class="ss-reset-button spec-btn"
-                  v-for="sku2 in sku1.options.filter(i=>i.name)"
+                  v-for="sku2 in (sku1.options || []).filter(i=>i.name)"
                   :class="[
                   {
                     'ui-BG-Main-Gradient': state.currentSkuMap[sku1.name] === sku2.name,
@@ -64,7 +64,7 @@
               </button>
             </view>
           </view>
-          <view class="buy-num-box ss-flex ss-col-center ss-row-between ss-m-b-40">
+          <!-- <view class="buy-num-box ss-flex ss-col-center ss-row-between ss-m-b-40">
             <view class="label-text">购买数量</view>
             <su-number-box
               :min="1"
@@ -73,7 +73,7 @@
               v-model="state.selectedSkuPrice.buyNum"
               @change="(val)=>state.selectedSkuPrice.buyNum = val"
             ></su-number-box>
-          </view>
+          </view> -->
         </scroll-view>
       </view>
       <view class="modal-footer border-top">
@@ -83,12 +83,12 @@
 <!--        >-->
 <!--          <button class="ss-reset-button score-btn ui-Shadow-Main" @tap="onBuy">立即兑换</button>-->
 <!--        </view>-->
-        <view class="buy-box ss-flex ss-col-center ss-flex ss-col-center ss-row-center">
+        <!-- <view class="buy-box ss-flex ss-col-center ss-flex ss-col-center ss-row-center">
           <button class="ss-reset-button add-btn ui-Shadow-Main" @tap="onAddCart"
             >加入购物车</button
           >
           <button class="ss-reset-button buy-btn ui-Shadow-Main" @tap="onBuy">立即购买</button>
-        </view>
+        </view> -->
       </view>
     </view>
   </su-popup>
@@ -104,7 +104,10 @@
   const props = defineProps({
     goodsInfo: {
       type: Object,
-      default() {},
+      default: () => ({
+        product: {},
+        skus: [],
+      }),
     },
     show: {
       type: Boolean,
@@ -117,22 +120,69 @@
   });
 
   const state = reactive({
-    selectedSkuPrice: {buyNum: 1},
+    selectedSkuPrice: { buyNum: 1 },
     currentSkuArray: [],
-    currentSkuMap: {}
+    currentSkuMap: {},
   });
 
-  // 默认单规格
-  if (props.goodsInfo.skus.length < 2) {
-    state.selectedSkuPrice = {...props.goodsInfo.skus[0], buyNum:1,productName:props.goodsInfo.product.name}
-    state.currentSkuMap = JSON.parse(state.selectedSkuPrice.spData);
-  }
+  const safeParseJson = (value, fallback) => {
+    if (typeof value !== 'string') return fallback;
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      return fallback;
+    }
+  };
 
-  const skuList = props.goodsInfo.skus;
+  const buildProductAttrListFromSkus = (skus = []) => {
+    const map = new Map();
+    skus.forEach((sku) => {
+      const spData = safeParseJson(sku?.spData, {});
+      Object.entries(spData || {}).forEach(([key, value]) => {
+        if (!key || !value) return;
+        if (!map.has(key)) {
+          map.set(key, new Set());
+        }
+        map.get(key).add(value);
+      });
+    });
+    return Array.from(map.entries()).map(([name, values]) => ({
+      name,
+      options: Array.from(values).map((value) => ({ name: value })),
+    }));
+  };
+
+  const setDefaultSku = (goodsInfo) => {
+    const skus = goodsInfo?.skus || [];
+    if (!skus.length) {
+      state.selectedSkuPrice = { buyNum: 1 };
+      state.currentSkuMap = {};
+      return;
+    }
+    if (skus.length < 2) {
+      state.selectedSkuPrice = {
+        ...skus[0],
+        buyNum: 1,
+        productName: goodsInfo?.product?.name,
+      };
+      state.currentSkuMap = safeParseJson(state.selectedSkuPrice.spData, {});
+    }
+  };
+
+  watch(
+    () => props.goodsInfo,
+    (value) => {
+      setDefaultSku(value);
+    },
+    {
+      immediate: true,
+      deep: true,
+    },
+  );
 
   // 可选规格
   const skuPrices = computed(() => {
-    return  props.goodsInfo.skus;
+    return props.goodsInfo.skus;
     // if (props.goodsInfo.is_sku) {
     //   skuPrices.forEach((item) => {
     //     item.goods_sku_id_arr = item.goods_sku_ids.split(',');
@@ -154,7 +204,12 @@
 
   // 可选择款式对象
   const productAttrList = computed(() => {
-    return JSON.parse(props.goodsInfo.product.productAttr);
+    const rawAttr = props.goodsInfo?.product?.productAttr;
+    const parsedAttr = safeParseJson(rawAttr, null);
+    if (Array.isArray(parsedAttr) && parsedAttr.length > 0) {
+      return parsedAttr;
+    }
+    return buildProductAttrListFromSkus(props.goodsInfo?.skus || []);
   });
 
   const goodsPrice = computed(() => {
@@ -307,16 +362,23 @@
     } else {
       delete state.currentSkuMap[pname];
     }
-    //判断是否符合选中sku
+    
+    const skuList = props.goodsInfo?.skus || [];
+    
+    // 判断是否符合选中 sku
     for (let i = 0; i < skuList.length; i++) {
-      const skus = JSON.parse(skuList[i].spData);
+      const skus = safeParseJson(skuList[i].spData, {});
       if (Object.keys(skus).length !== Object.keys(state.currentSkuMap).length) {
-        state.selectedSkuPrice = {};
-        return;
+        state.selectedSkuPrice = { buyNum: 1 };
+        continue;
       }
       const list = Object.keys(skus).filter(item => skus[item] !== state.currentSkuMap[item]);
       if (!list || list.length < 1) {
-        state.selectedSkuPrice = {...skuList[i],buyNum:1,productName:props.goodsInfo.product.name};
+        state.selectedSkuPrice = {
+          ...skuList[i],
+          buyNum: state.selectedSkuPrice.buyNum || 1,
+          productName: props.goodsInfo?.product?.name,
+        };
         return;
       }
     }
