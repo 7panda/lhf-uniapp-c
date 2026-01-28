@@ -60,9 +60,9 @@
             "
             :status="state.loadStatus"
             :content-text="{
-              contentdown: '点击查看更多',
+              contentdown: '加载中...',
+              contentnomore: '已加载全部',
             }"
-            @tap="loadmore"
           />
         </scroll-view>
       </view>
@@ -80,6 +80,10 @@
   import { onLoad, onReachBottom } from '@dcloudio/uni-app';
   import { computed, reactive } from 'vue';
   import _ from 'lodash';
+  
+  // 防抖定时器
+  let loadmoreTimer = null;
+  
   const state = reactive({
     categoryList: [],
     activeMenu: '0',
@@ -97,62 +101,166 @@
   const pageHeight = computed(() => safeArea.height - 44 - 50);
 
   async function getList(options) {
-    const { error, data } = await sheep.$api.category.list({
+    const envDeptId = import.meta.env.VITE_SHOPRO_DEPT_ID || import.meta.env.SHOPRO_DEPT_ID || '200';
+    
+    console.log('🚀 [分类页面] 请求参数:', { id: options.id, dept_id: envDeptId });
+    
+    const res = await sheep.$api.category.list({
       id: options.id,
+      dept_id: envDeptId, // 显式注入部门ID
     });
-    if (error === 0) {
-      state.categoryList = data;
+    
+    console.log('📦 [分类接口] 完整响应:', res);
+    console.log('📦 [响应类型]:', typeof res, Array.isArray(res) ? '(数组)' : '(对象)');
+    
+    // 适配多种响应格式
+    let actualData = null;
+    
+    if (Array.isArray(res)) {
+      // 格式1: 直接返回数组
+      actualData = res;
+      console.log('🔍 [响应格式] 直接数组，长度:', actualData.length);
+    } else if (res && res.data !== undefined) {
+      // 格式2: {code, data, msg} 包装
+      actualData = res.data;
+      console.log('🔍 [响应格式] {data} 包装:', actualData);
+    } else if (res && typeof res === 'object') {
+      // 格式3: 其他对象
+      actualData = res;
+      console.log('🔍 [响应格式] 对象:', actualData);
+    }
+    
+    if (actualData) {
+      // 数据结构适配：如果后端返回数组，包装成对象
+      if (Array.isArray(actualData)) {
+        state.categoryList = {
+          children: actualData,
+          style: 'first_one', // 默认样式
+        };
+        console.log('✅ [分类数据] 已适配数组结构 -> 对象:', state.categoryList);
+      } else if (actualData && typeof actualData === 'object') {
+        // 如果是对象但缺少style，补充默认值
+        state.categoryList = {
+          style: 'first_one',
+          ...actualData,
+        };
+        console.log('✅ [分类数据] 已加载对象结构:', state.categoryList);
+      } else {
+        state.categoryList = actualData;
+        console.warn('⚠️ [分类数据] 未知数据结构:', actualData);
+      }
+    } else {
+      console.error('❌ [分类列表] 无法解析响应数据，原始响应:', res);
     }
   }
 
   const onMenu = (val) => {
+    console.log('🔄 [分类切换] activeMenu:', state.activeMenu, '->', val);
+    
     state.activeMenu = val;
     if (state.categoryList.style === 'first_one' || state.categoryList.style === 'first_two') {
+      // 重置分页数据
       state.pagination = {
         data: [],
         current_page: 1,
         total: 1,
         last_page: 1,
       };
+      console.log('🔄 [分类切换] 加载商品 category_id:', state.categoryList.children[val].id);
       getGoodsList(state.categoryList.children[val].id);
     }
   };
 
   async function getGoodsList(id, page = 1, list_rows = 6) {
+    // 状态锁：防止并发请求导致的死循环
+    if (state.loadStatus === 'loading') {
+      console.warn('⚠️ [商品列表] 正在请求中，跳过重复调用');
+      return;
+    }
+    
     state.loadStatus = 'loading';
+    const envDeptId = import.meta.env.VITE_SHOPRO_DEPT_ID || import.meta.env.SHOPRO_DEPT_ID || '200';
     const res = await sheep.$api.goods.list({
       category_id: id,
       list_rows,
       page,
+      dept_id: envDeptId, // 显式注入部门ID
     });
-    if (res.error === 0) {
-      let couponList = _.concat(state.pagination.data, res.data.data);
-      state.pagination = {
-        ...res.data,
-        data: couponList,
-      };
-      if (state.pagination.current_page < state.pagination.last_page) {
-        state.loadStatus = 'more';
-      } else {
+    
+    console.log('📦 [分类商品列表] category_id:', id, 'dept_id:', envDeptId, 'result:', res);
+    
+    if (res) {
+      // 兼容处理：后端返回的是 Spring Data Page 格式（res.content），不是 res.data.data
+      const rawList = res.content || (res.data ? res.data.data : []);
+      
+      console.log('🔍 [字段适配] content:', res.content?.length, 'rawList:', rawList?.length);
+      
+      // 重要：字段映射 - 后端返回 pic/name，前端组件期待 image/title
+      const actualList = rawList.map(item => ({
+        ...item,
+        image: item.pic || item.image, // 核心修复：组件找的是 image
+        title: item.name || item.title, // 核心修复：组件找的是 title
+        price: item.price || [item.minPrice, item.maxPrice] // 价格兼容处理
+      }));
+      
+      console.log('🔄 [字段映射] 示例数据:', actualList[0]);
+      
+      // 如果是第一页，直接赋值；如果是加载更多，则合并
+      state.pagination.data = page === 1 ? actualList : _.concat(state.pagination.data, actualList);
+      
+      // 同步更新分页元数据（适配 Spring Data Page 字段）
+      state.pagination.total = res.totalElements || res.total || 0;
+      state.pagination.current_page = res.number !== undefined ? res.number + 1 : (res.current_page || page);
+      state.pagination.last_page = res.totalPages || res.last_page || 1;
+      
+      console.log('✅ [分页状态] data.length:', state.pagination.data.length, 
+                  'current:', state.pagination.current_page, 
+                  'last:', state.pagination.last_page);
+      
+      // 更新加载状态
+      if (state.pagination.current_page >= state.pagination.last_page) {
         state.loadStatus = 'noMore';
+      } else {
+        state.loadStatus = 'more';
       }
+    } else {
+      console.error('❌ [商品列表] 响应为空');
+      state.loadStatus = ''; // 失败时重置状态，允许重试
     }
   }
   // 加载更多
   function loadmore() {
-    if (state.loadStatus !== 'noMore') {
+    // 如果已到最后一页或正在加载，则不触发
+    if (state.loadStatus === 'noMore' || state.loadStatus === 'loading') {
+      return;
+    }
+    
+    // 防抖：300ms内多次触发只执行一次
+    clearTimeout(loadmoreTimer);
+    loadmoreTimer = setTimeout(() => {
+      console.log('📄 [自动加载] 触发下一页，当前页:', state.pagination.current_page);
       getGoodsList(
         state.categoryList.children[state.activeMenu].id,
         state.pagination.current_page + 1,
       );
-    }
+    }, 300);
   }
+  
   onLoad(async (options) => {
     await getList(options);
-    if (state.categoryList.style === 'first_one' || state.categoryList.style === 'first_two') {
-      getGoodsList(state.categoryList.children[0].id);
+    
+    // 只有在确定分类列表有内容且没有正在请求商品时，才初始化第一项
+    if (state.categoryList?.children?.length > 0) {
+      if (state.categoryList.style === 'first_one' || state.categoryList.style === 'first_two') {
+        // 确保只初始化一次，防止重复触发
+        if (state.pagination.data.length === 0) {
+          console.log('🚀 [初始化] 加载第一个分类的商品:', state.categoryList.children[0].id);
+          getGoodsList(state.categoryList.children[0].id);
+        }
+      }
     }
   });
+  
   onReachBottom(() => {
     loadmore();
   });
