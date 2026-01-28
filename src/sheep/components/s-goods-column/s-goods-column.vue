@@ -196,11 +196,11 @@
         </view>
       </view>
 
-      <slot name="cart"
+      <!-- <slot name="cart"
         ><view class="buy-box ss-flex ss-col-center ss-row-center" v-if="buttonShow"
           >去购买</view
         ></slot
-      >
+      > -->
     </view>
 
     <!-- sl卡片：竖向型，一行放一个，图片上内容下边 -->
@@ -260,9 +260,9 @@
         </view>
       </view>
 
-      <slot name="cart"
+      <!-- <slot name="cart"
         ><view class="buy-box ss-flex ss-col-center ss-row-center">去购买</view></slot
-      >
+      > -->
     </view>
   </view>
 </template>
