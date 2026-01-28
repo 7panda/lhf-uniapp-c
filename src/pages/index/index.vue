@@ -14,7 +14,7 @@
 			<!-- 分类 -->
 			<template v-if="false">
 				<view class="category-content">
-					<view class="category-item" v-for="(it,idx) in categoryList"
+					<view class="category-item" v-for="it in categoryList" :key="it.id"
 						@tap="sheep.$router.go('/pages/goods/list', { categoryId: it.id })">
 						<image :src="it.icon" class="ct-icon" />
 						<view class="ct-text">{{it.name}}</view>
