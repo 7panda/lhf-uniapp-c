@@ -83,6 +83,13 @@
         "title": "自定义页面",
         "group": "商城"
       }
+    },
+    {
+    	"path" : "pages/index/Corporation",
+    	"style" : 
+    	{
+    		"navigationBarTitleText" : "公司信息"
+    	}
     }
   ],
   "subPackages": [
@@ -95,6 +102,7 @@
             "navigationBarTitleText": "商品详情"
           },
           "meta": {
+            "auth": false,
             "sync": true,
             "title": "普通商品",
             "group": "商品"
@@ -742,7 +750,7 @@
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "星品购",
+    "navigationBarTitleText": "全屋家具",
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#FFFFFF",
     "navigationStyle": "custom"
@@ -753,7 +761,7 @@
         "pagePath": "pages/index/index"
       },
       {
-        "pagePath": "pages/index/cart"
+             "pagePath": "pages/index/cart"
       },
       {
         "pagePath": "pages/index/user"
