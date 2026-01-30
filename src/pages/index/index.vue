@@ -3,8 +3,8 @@
 		<s-layout title="首页" navbar="custom" tabbar="/pages/index/index" :navbarStyle="template.style?.navbar"
 			onShareAppMessage>
 			<!--轮播图 -->
-			     <view class="banner-content">
-			       <swiper class="swiper-content" :indicator-dots="true" :autoplay="true">
+			     <view class="banner-content" v-if="bannerList.length">
+			       <swiper class="swiper-content" :indicator-dots="bannerIndicatorDots" :autoplay="true">
 			         <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">
 			           <image :src="it.src" class="img"/>
 			         </swiper-item>
@@ -123,7 +123,19 @@
 	uni.hideTabBar();
 
 	const template = computed(() => sheep.$store('app').template.home);
-	const bannerList = computed(() => template.value?.bannerList || [])
+	const bannerBlock = computed(() => template.value?.data?.find((item) => item.type === 'imageBanner'))
+	const bannerIndicatorDots = computed(() => (bannerBlock.value?.data?.indicator ?? 1) !== 0)
+	const bannerList = computed(() => {
+		const list = bannerBlock.value?.data?.list || template.value?.bannerList || []
+		return list.map((item, index) => ({
+			id: item.id ?? `${index}`,
+			src: sheep.$url.cdn(item.src || item.poster || item.image || ''),
+			title: item.title || '',
+			link: item.url || item.link || item.path || '',
+			urlType: item.urlType || item.type || '',
+			query: item.query || {}
+		}))
+	})
   const barHeight = ref(0)
 	onLoad((options) => {
     const statusBarHeight = sheep.$platform.device.statusBarHeight;
