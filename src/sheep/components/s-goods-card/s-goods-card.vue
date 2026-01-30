@@ -15,8 +15,8 @@
             :goodsFields="goodsFields"
             :tagStyle="tagStyle"
             :data="item"
-            :titleColor="goodsFields.title?.color"
-            :subTitleColor="goodsFields.subtitle.color"
+            :titleColor="goodsFields?.title?.color"
+            :subTitleColor="goodsFields?.subtitle?.color"
             :topRadius="data.borderRadiusTop"
             :bottomRadius="data.borderRadiusBottom"
             @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
@@ -48,13 +48,12 @@
               :goodsFields="goodsFields"
               :tagStyle="tagStyle"
               :data="item"
-              :titleColor="goodsFields.title?.color"
-              :subTitleColor="goodsFields.subtitle.color"
+              :titleColor="goodsFields?.title?.color"
+              :subTitleColor="goodsFields?.subtitle?.color"
               :topRadius="data.borderRadiusTop"
               :bottomRadius="data.borderRadiusBottom"
               :titleWidth="330 - marginLeft - marginRight"
               @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
-              @getHeight="mountMasonry($event, 'left')"
           >
             <template v-slot:cart>
               <button class="ss-reset-button cart-btn" :style="[buyStyle]">
@@ -77,13 +76,12 @@
               :goodsFields="goodsFields"
               :tagStyle="tagStyle"
               :data="item"
-              :titleColor="goodsFields.title?.color"
-              :subTitleColor="goodsFields.subtitle.color"
+              :titleColor="goodsFields?.title?.color"
+              :subTitleColor="goodsFields?.subtitle?.color"
               :topRadius="data.borderRadiusTop"
               :bottomRadius="data.borderRadiusBottom"
               :titleWidth="330 - marginLeft - marginRight"
               @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
-              @getHeight="mountMasonry($event, 'right')"
           >
             <template v-slot:cart>
               <button class="ss-reset-button cart-btn" :style="[buyStyle]">
@@ -109,8 +107,8 @@
             :goodsFields="goodsFields"
             :data="item"
             :tagStyle="tagStyle"
-            :titleColor="goodsFields.title?.color"
-            :subTitleColor="goodsFields.subtitle.color"
+            :titleColor="goodsFields?.title?.color"
+            :subTitleColor="goodsFields?.subtitle?.color"
             :topRadius="data.borderRadiusTop"
             :bottomRadius="data.borderRadiusBottom"
             @tap="sheep.$router.go('/pages/goods/index', { id: item.id })"
@@ -143,7 +141,6 @@
 import { computed, reactive, onMounted } from 'vue';
 import { onReachBottom } from '@dcloudio/uni-app';
 import sheep from '@/sheep';
-import _ from "lodash";
 
 const pagination = {
   data: [],
@@ -198,7 +195,9 @@ async function getList() {
   state.pagination.data = goodsList;
   state.pagination.total = totalElements;
   state.goodsList = goodsList;
-  mountMasonry();
+  if (mode === 2) {
+    rebuildMasonry();
+  }
   if (state.pagination.page < totalPages){
     state.loadStatus = 'more'
   }else {
@@ -212,32 +211,19 @@ onReachBottom(() => {
 });
 onMounted(async () => {
   await getList()
-  if (mode === 2) {
-    mountMasonry();
-  }
 });
 
-// 加载瀑布流
-let count = 0;
-let leftHeight = 0;
-let rightHeight = 0;
-
-function mountMasonry(height = 0, where = 'left') {
-  if (!state.goodsList[count]) return;
-  if (count %2 === 0) {
-    state.leftGoodsList.push(state.goodsList[count]);
-  } else {
-    state.rightGoodsList.push(state.goodsList[count]);
-  }
-  // if (!state.goodsList[count]) return;
-  // if (where === 'left') leftHeight += height;
-  // if (where === 'right') rightHeight += height;
-  // if (leftHeight <= rightHeight) {
-  //   state.leftGoodsList.push(state.goodsList[count]);
-  // } else {
-  //   state.rightGoodsList.push(state.goodsList[count]);
-  // }
-  count++;
+// 构建瀑布流数据
+function rebuildMasonry() {
+  state.leftGoodsList = [];
+  state.rightGoodsList = [];
+  state.goodsList.forEach((item, index) => {
+    if (index % 2 === 0) {
+      state.leftGoodsList.push(item);
+    } else {
+      state.rightGoodsList.push(item);
+    }
+  });
 }
 
 // 购买按钮样式

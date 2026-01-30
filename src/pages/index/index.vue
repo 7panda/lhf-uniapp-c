@@ -3,13 +3,13 @@
 		<s-layout title="首页" navbar="custom" tabbar="/pages/index/index" :navbarStyle="template.style?.navbar"
 			onShareAppMessage>
 			<!--轮播图 -->
-			<!--      <view class="banner-content">-->
-			<!--        <swiper class="swiper-content" :indicator-dots="true" :autoplay="true">-->
-			<!--          <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">-->
-			<!--            <image :src="it.src" class="img"/>-->
-			<!--          </swiper-item>-->
-			<!--        </swiper>-->
-			<!--      </view>-->
+			     <view class="banner-content">
+			       <swiper class="swiper-content" :indicator-dots="true" :autoplay="true">
+			         <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">
+			           <image :src="it.src" class="img"/>
+			         </swiper-item>
+			       </swiper>
+			     </view>
 
 			<!-- 分类 -->
 			<template v-if="false">
@@ -58,6 +58,7 @@
 	import weixin from '@/sheep/libs/sdk-h5-weixin';
 	//#endif
 	const categoryList = ref([])
+	const shareData = ref($share.getShareInfo())
 	const goodsCard = {
 		"data": {
 			"mode": 2,
@@ -122,6 +123,7 @@
 	uni.hideTabBar();
 
 	const template = computed(() => sheep.$store('app').template.home);
+	const bannerList = computed(() => template.value?.bannerList || [])
   const barHeight = ref(0)
 	onLoad((options) => {
     const statusBarHeight = sheep.$platform.device.statusBarHeight;
@@ -148,21 +150,16 @@
 		if (options.page) {
 			sheep.$router.go(decodeURIComponent(options.page));
 		}
+		refreshShareData()
 		getCategoryList()
 		//#ifdef H5
 		setOpenShare()
 		//#endif
 	});
 	onShareAppMessage((res) => {
-		// let shareData = {
-		// 	title: '邀请好友领取海量现金券!',
-		// 	desc: '我正在使用xxxApp，赶紧跟我一起来体验！',
-		// 	link: "https://mall.ichengle.top/uni/",
-		// 	imgUrl: 'https://bjetxgzv.cdn.bspapp.com/VKCEYUGU-uni-app-doc/d8590190-4f28-11eb-b680-7980c8a877b8.png'
-		// }
-		// return {
-		// 	...shareData
-		// }
+		return {
+			...shareData.value
+		}
 	});
 	// 下拉刷新
 	onPullDownRefresh(() => {
@@ -179,18 +176,21 @@
 	//#ifdef H5
 	// 微信h5分享；
 	function setOpenShare() {
-		let currentUrl = location.href //获取当前页面链接
-
-		// let shareData = {
-			// title: '邀请好友领取海量现金券!',
-			// desc: '我正在使用xxxApp，赶紧跟我一起来体验！',
-			// link: "https://mall.ichengle.top/uni/",
-			// imgUrl: 'https://bjetxgzv.cdn.bspapp.com/VKCEYUGU-uni-app-doc/d8590190-4f28-11eb-b680-7980c8a877b8.png'
-		// }
-		console.log("更新分享", shareData)
-		weixin.updateShareInfo(shareData);
+		weixin.updateShareInfo(shareData.value);
 	}
 	//#endif
+
+	function refreshShareData() {
+		shareData.value = $share.getShareInfo();
+	}
+
+	function clickBanner(item) {
+		if (!item) return;
+		const link = item.link || item.url || item.path;
+		if (link) {
+			sheep.$router.go(link, item.query || {});
+		}
+	}
 	// 获取商品分类
 	function getCategoryList() {
 		sheep.$api.category.list().then(res => {
