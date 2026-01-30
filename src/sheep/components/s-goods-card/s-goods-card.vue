@@ -6,7 +6,7 @@
       <view
           class="goods-box"
           v-for="item in state.goodsList"
-          :key="item.id"
+          :key="getGoodsId(item)"
           :style="[{ marginBottom: data.space * 2 + 'rpx' }]"
       >
         <s-goods-column
@@ -19,7 +19,7 @@
             :subTitleColor="goodsFields?.subtitle?.color"
             :topRadius="data.borderRadiusTop"
             :bottomRadius="data.borderRadiusBottom"
-            @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
+            @click="goDetail(item)"
         >
           <template v-slot:cart>
             <button class="ss-reset-button cart-btn" :style="[buyStyle]">
@@ -40,7 +40,7 @@
             class="left-list"
             :style="[{ paddingRight: data.space + 'rpx', marginBottom: data.space + 'px' }]"
             v-for="item in state.leftGoodsList"
-            :key="item.id"
+          :key="getGoodsId(item)"
         >
           <s-goods-column
               class="goods-md-box"
@@ -53,7 +53,7 @@
               :topRadius="data.borderRadiusTop"
               :bottomRadius="data.borderRadiusBottom"
               :titleWidth="330 - marginLeft - marginRight"
-              @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
+                @click="goDetail(item)"
           >
             <template v-slot:cart>
               <button class="ss-reset-button cart-btn" :style="[buyStyle]">
@@ -68,7 +68,7 @@
             class="right-list"
             :style="[{ paddingLeft: data.space + 'rpx', marginBottom: data.space + 'px' }]"
             v-for="item in state.rightGoodsList"
-            :key="item.id"
+          :key="getGoodsId(item)"
         >
           <s-goods-column
               class="goods-md-box"
@@ -81,7 +81,7 @@
               :topRadius="data.borderRadiusTop"
               :bottomRadius="data.borderRadiusBottom"
               :titleWidth="330 - marginLeft - marginRight"
-              @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
+                @click="goDetail(item)"
           >
             <template v-slot:cart>
               <button class="ss-reset-button cart-btn" :style="[buyStyle]">
@@ -99,7 +99,7 @@
           class="goods-box"
           :style="[{ marginBottom: data.space + 'px' }]"
           v-for="item in state.goodsList"
-          :key="item.id"
+          :key="getGoodsId(item)"
       >
         <s-goods-column
             class="goods-card"
@@ -111,7 +111,7 @@
             :subTitleColor="goodsFields?.subtitle?.color"
             :topRadius="data.borderRadiusTop"
             :bottomRadius="data.borderRadiusBottom"
-            @tap="sheep.$router.go('/pages/goods/index', { id: item.id })"
+            @tap="goDetail(item)"
         >
           <template v-slot:cart>
             <button class="ss-reset-button cart-btn" :style="[buyStyle]">
@@ -178,6 +178,25 @@ async function loadmore() {
 }
 const { mode, tagStyle, buyNowStyle, goodsFields, goodsIds } = props.data ?? {};
 const { marginLeft, marginRight } = props.styles ?? {};
+
+function getGoodsId(item) {
+  if (!item) return '';
+  return (
+    item.product?.id ||
+    item.product?.productId ||
+    item.product?.spuId ||
+    item.productId ||
+    item.spuId ||
+    item.id ||
+    ''
+  );
+}
+
+function goDetail(item) {
+  const id = getGoodsId(item);
+  if (!id) return;
+  sheep.$router.go('/pages/goods/index', { id });
+}
 
 async function getGoodsListByIds(ids) {
   let { data } = await sheep.$api.goods.ids({ ids });
