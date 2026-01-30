@@ -25,6 +25,19 @@ export default {
             },
         }),
 
+    // 商品搜索
+    search: (data, params) =>
+      request({
+        url: 'no-auth/search/product/list',
+        method: 'post',
+        data,
+        params,
+        custom: {
+          showLoading: false,
+          showError: false,
+        },
+      }),
+
   // 商品查询
   ids: (params = {}) =>
     request({

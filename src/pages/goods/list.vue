@@ -121,6 +121,10 @@
   import sheep from '@/sheep';
   import _ from 'lodash';
 
+  const SEARCH_HISTORY_KEY = 'searchHistory';
+  const SEARCH_HISTORY_LIMIT = 10;
+  const SEARCH_HISTORY_ITEMS_LIMIT = 6;
+
   const sys_navBar = sheep.$platform.navbar;
   const emits = defineEmits(['close', 'change']);
 
@@ -186,6 +190,53 @@
     leftGoodsList: [],
     rightGoodsList: [],
   });
+
+  function normalizeHistoryList(rawList) {
+    const list = Array.isArray(rawList) ? rawList : [];
+    return list
+      .map((item) => {
+        if (typeof item === 'string') {
+          return {
+            keyword: item,
+            items: [],
+            updatedAt: 0,
+          };
+        }
+        if (!item || !item.keyword) return null;
+        return {
+          keyword: String(item.keyword).trim(),
+          items: Array.isArray(item.items) ? item.items : [],
+          updatedAt: item.updatedAt || 0,
+        };
+      })
+      .filter((item) => item && item.keyword);
+  }
+
+  function buildHistoryItems(goodsList = []) {
+    return goodsList.slice(0, SEARCH_HISTORY_ITEMS_LIMIT).map((item) => ({
+      id: item.id,
+      name: item.name || item.title || '',
+      pic: item.pic || item.image || '',
+      price: item.price,
+    }));
+  }
+
+  function updateSearchHistory(keyword, goodsList = []) {
+    const safeKeyword = String(keyword || '').trim();
+    if (!safeKeyword) return;
+    const list = normalizeHistoryList(uni.getStorageSync(SEARCH_HISTORY_KEY) || []);
+    const index = list.findIndex((item) => item.keyword === safeKeyword);
+    const prevItems = index >= 0 ? list[index].items || [] : [];
+    const items = goodsList.length ? goodsList : prevItems;
+    if (index >= 0) list.splice(index, 1);
+    list.unshift({
+      keyword: safeKeyword,
+      items,
+      updatedAt: Date.now(),
+    });
+    if (list.length > SEARCH_HISTORY_LIMIT) list.length = SEARCH_HISTORY_LIMIT;
+    uni.setStorageSync(SEARCH_HISTORY_KEY, list);
+  }
 
   // 加载瀑布流
   let count = 0;
@@ -275,11 +326,15 @@
       orderField: state.currentSort,
       orderSort: state.currentOrder
     }
-    const res = await sheep.$api.goods.list(params, { page:state.pagination.current_page - 1, size: state.pagination.size });
+    const requestApi = state.keyword ? sheep.$api.goods.search : sheep.$api.goods.list;
+    const res = await requestApi(params, { page:state.pagination.current_page - 1, size: state.pagination.size });
     const { content, totalElements, totalPages } = res;
     state.pagination.data = _.concat(state.pagination.data, content)
     state.pagination.total = totalElements
     mountMasonry();
+    if (state.keyword && state.pagination.current_page === 1) {
+      updateSearchHistory(state.keyword, buildHistoryItems(content || []));
+    }
     if (state.pagination.current_page < totalPages) {
       state.loadStatus = 'more';
     } else {
