@@ -59,7 +59,7 @@
           :data="item"
           :topRadius="10"
           :bottomRadius="10"
-          @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
+            @click="onClickGoods(item)"
         ></s-goods-column>
       </view>
     </view>
@@ -75,7 +75,7 @@
             :data="item"
             :topRadius="10"
             :bottomRadius="10"
-            @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
+            @click="onClickGoods(item)"
             @getHeight="mountMasonry($event, 'left')"
           >
             <template v-slot:cart>
@@ -92,7 +92,7 @@
             :topRadius="10"
             :bottomRadius="10"
             :data="item"
-            @click="sheep.$router.go('/pages/goods/index', { id: item.id })"
+            @click="onClickGoods(item)"
             @getHeight="mountMasonry($event, 'right')"
           >
             <template v-slot:cart>
@@ -191,6 +191,51 @@
     rightGoodsList: [],
   });
 
+  function resolveGoodsId(goods) {
+    if (!goods) return '';
+    return goods.id || goods.productId || goods.spuId || '';
+  }
+
+  function normalizeGoods(goods) {
+    if (!goods) return null;
+    return {
+      id: resolveGoodsId(goods),
+      name: goods.name || goods.title || '',
+      pic: goods.pic || goods.image || goods.picUrl || goods.cover || '',
+      price: goods.price,
+    };
+  }
+
+  function updateSearchHistoryByClick(keyword, goods) {
+    const safeKeyword = String(keyword || '').trim();
+    if (!safeKeyword || !goods?.id) return;
+    const list = normalizeHistoryList(uni.getStorageSync(SEARCH_HISTORY_KEY) || []);
+    const index = list.findIndex((item) => item.keyword === safeKeyword);
+    const items = index >= 0 ? list[index].items || [] : [];
+    const filtered = items.filter((item) => item.id !== goods.id);
+    filtered.unshift(goods);
+    if (filtered.length > SEARCH_HISTORY_ITEMS_LIMIT) {
+      filtered.length = SEARCH_HISTORY_ITEMS_LIMIT;
+    }
+    if (index >= 0) list.splice(index, 1);
+    list.unshift({
+      keyword: safeKeyword,
+      items: filtered,
+      updatedAt: Date.now(),
+    });
+    if (list.length > SEARCH_HISTORY_LIMIT) list.length = SEARCH_HISTORY_LIMIT;
+    uni.setStorageSync(SEARCH_HISTORY_KEY, list);
+  }
+
+  function onClickGoods(item) {
+    const goods = normalizeGoods(item);
+    if (!goods?.id) return;
+    if (state.keyword) {
+      updateSearchHistoryByClick(state.keyword, goods);
+    }
+    sheep.$router.go('/pages/goods/index', { id: goods.id });
+  }
+
   function normalizeHistoryList(rawList) {
     const list = Array.isArray(rawList) ? rawList : [];
     return list
@@ -205,37 +250,15 @@
         if (!item || !item.keyword) return null;
         return {
           keyword: String(item.keyword).trim(),
-          items: Array.isArray(item.items) ? item.items : [],
+          items: Array.isArray(item.items)
+            ? item.items
+                .map((goods) => normalizeGoods(goods))
+                .filter((goods) => goods && goods.id)
+            : [],
           updatedAt: item.updatedAt || 0,
         };
       })
       .filter((item) => item && item.keyword);
-  }
-
-  function buildHistoryItems(goodsList = []) {
-    return goodsList.slice(0, SEARCH_HISTORY_ITEMS_LIMIT).map((item) => ({
-      id: item.id,
-      name: item.name || item.title || '',
-      pic: item.pic || item.image || '',
-      price: item.price,
-    }));
-  }
-
-  function updateSearchHistory(keyword, goodsList = []) {
-    const safeKeyword = String(keyword || '').trim();
-    if (!safeKeyword) return;
-    const list = normalizeHistoryList(uni.getStorageSync(SEARCH_HISTORY_KEY) || []);
-    const index = list.findIndex((item) => item.keyword === safeKeyword);
-    const prevItems = index >= 0 ? list[index].items || [] : [];
-    const items = goodsList.length ? goodsList : prevItems;
-    if (index >= 0) list.splice(index, 1);
-    list.unshift({
-      keyword: safeKeyword,
-      items,
-      updatedAt: Date.now(),
-    });
-    if (list.length > SEARCH_HISTORY_LIMIT) list.length = SEARCH_HISTORY_LIMIT;
-    uni.setStorageSync(SEARCH_HISTORY_KEY, list);
   }
 
   // 加载瀑布流
@@ -332,9 +355,6 @@
     state.pagination.data = _.concat(state.pagination.data, content)
     state.pagination.total = totalElements
     mountMasonry();
-    if (state.keyword && state.pagination.current_page === 1) {
-      updateSearchHistory(state.keyword, buildHistoryItems(content || []));
-    }
     if (state.pagination.current_page < totalPages) {
       state.loadStatus = 'more';
     } else {

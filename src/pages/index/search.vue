@@ -21,7 +21,7 @@
             class="match-item"
             v-for="item in matchedItems"
             :key="item.id"
-            @tap="goDetail(item.id)"
+            @tap="goDetail(item, state.keyword)"
           >
             <image class="match-img" :src="formatImg(item.pic)" mode="aspectFill" />
             <view class="match-name ss-line-1">{{ item.name }}</view>
@@ -38,16 +38,13 @@
             <view class="history-keyword" @tap="onSearch(item.keyword)">
               {{ item.keyword }}
             </view>
-            <button class="history-search-btn ss-reset-button" @tap="onSearch(item.keyword)">
-              搜索
-            </button>
           </view>
           <view v-if="item.items && item.items.length" class="history-products">
             <view
               class="history-product"
               v-for="goods in item.items"
               :key="goods.id"
-              @tap="goDetail(goods.id)"
+                @tap="goDetail(goods, item.keyword)"
             >
               <image class="history-product-img" :src="formatImg(goods.pic)" mode="aspectFill" />
               <view class="history-product-name ss-line-1">{{ goods.name }}</view>
@@ -106,7 +103,11 @@
         if (!item || !item.keyword) return null;
         return {
           keyword: String(item.keyword).trim(),
-          items: Array.isArray(item.items) ? item.items : [],
+          items: Array.isArray(item.items)
+            ? item.items
+                .map((goods) => normalizeGoods(goods))
+                .filter((goods) => goods && goods.id)
+            : [],
           updatedAt: item.updatedAt || 0,
         };
       })
@@ -130,26 +131,44 @@
   function onSearch(keyword) {
     const safeKeyword = String(keyword || state.keyword || '').trim();
     if (!safeKeyword) return;
-    saveSearchHistory(safeKeyword);
     sheep.$router.go('/pages/goods/list', { keyword: safeKeyword });
   }
 
-  function goDetail(id) {
-    if (!id) return;
-    sheep.$router.go('/pages/goods/index', { id });
+  function resolveGoodsId(goods) {
+    if (!goods) return '';
+    return goods.id || goods.productId || goods.spuId || '';
   }
 
-  // 保存搜索历史
-  function saveSearchHistory(keyword) {
+  function normalizeGoods(goods) {
+    if (!goods) return null;
+    return {
+      id: resolveGoodsId(goods),
+      name: goods.name || goods.title || '',
+      pic: goods.pic || goods.image || goods.picUrl || goods.cover || '',
+      price: goods.price,
+    };
+  }
+
+  function goDetail(goods, keyword) {
+    const target = normalizeGoods(goods);
+    if (!target || !target.id) return;
+    saveSearchHistoryByClick(keyword, target);
+    sheep.$router.go('/pages/goods/index', { id: target.id });
+  }
+
+  // 仅在点击商品时保存历史
+  function saveSearchHistoryByClick(keyword, goods) {
     const safeKeyword = String(keyword || '').trim();
-    if (!safeKeyword) return;
+    if (!safeKeyword || !goods?.id) return;
     const list = normalizeHistoryList(uni.getStorageSync(SEARCH_HISTORY_KEY) || []);
     const index = list.findIndex((item) => item.keyword === safeKeyword);
     const items = index >= 0 ? list[index].items || [] : [];
+    const filtered = items.filter((item) => item.id !== goods.id);
+    filtered.unshift(goods);
     if (index >= 0) list.splice(index, 1);
     list.unshift({
       keyword: safeKeyword,
-      items,
+      items: filtered,
       updatedAt: Date.now(),
     });
     if (list.length > SEARCH_HISTORY_LIMIT) list.length = SEARCH_HISTORY_LIMIT;
@@ -264,13 +283,6 @@
     color: #333333;
   }
 
-  .history-search-btn {
-    font-size: 24rpx;
-    color: #666666;
-    padding: 6rpx 20rpx;
-    background: #ffffff;
-    border-radius: 24rpx;
-  }
 
   .history-products {
     display: flex;
