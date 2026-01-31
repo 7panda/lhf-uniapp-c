@@ -103,15 +103,15 @@
   async function getList(options) {
     const envDeptId = import.meta.env.VITE_SHOPRO_DEPT_ID || import.meta.env.SHOPRO_DEPT_ID || '200';
     
-    console.log('🚀 [分类页面] 请求参数:', { id: options.id, dept_id: envDeptId });
+    console.log(' [分类页面] 请求参数:', { id: options.id, dept_id: envDeptId });
     
     const res = await sheep.$api.category.list({
       id: options.id,
       dept_id: envDeptId, // 显式注入部门ID
     });
     
-    console.log('📦 [分类接口] 完整响应:', res);
-    console.log('📦 [响应类型]:', typeof res, Array.isArray(res) ? '(数组)' : '(对象)');
+    console.log(' [分类接口] 完整响应:', res);
+    console.log(' [响应类型]:', typeof res, Array.isArray(res) ? '(数组)' : '(对象)');
     
     // 适配多种响应格式
     let actualData = null;
