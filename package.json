@@ -1,9 +1,9 @@
 {
   "id": "shopro",
   "name": "shopro",
-  "displayName": "若依mall",
-  "version": "1.0.1",
-  "description": "若依mall，基于Shopro-B2C商城前端开发，一套代码，同时发行到iOS、Android、H5、微信小程序多个平台，请使用手机扫码快速体验强大功能",
+  "displayName": "华飞茗品",
+  "version": "1.0.2",
+  "description": "",
   "scripts": {
     "prettier": "prettier --write  \"{pages,sheep}/**/*.{js,json,tsx,css,less,scss,vue,html,md}\"",
     "dev:app": "uni -p app",
@@ -40,7 +40,7 @@
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "prepare": "husky install"
   },
-  "repository": "https://github.com/sheepjs/shop.git",
+  "repository": "",
   "keywords": [
     "商城",
     "B2C",
@@ -50,9 +50,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sheepjs/shop/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/dcloudio/hello-uniapp#readme",
+  "homepage": "",
   "dcloudext": {
     "category": [
       "前端页面模板",

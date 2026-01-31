@@ -21,18 +21,7 @@
         "group": "商城"
       }
     },
-    {
-      "path": "pages/index/user",
-      "style": {
-        "navigationBarTitleText": "个人中心",
-        "enablePullDownRefresh": true
-      },
-      "meta": {
-        "sync": true,
-        "title": "个人中心",
-        "group": "商城"
-      }
-    },
+    
     {
       "path": "pages/index/category",
       "style": {
@@ -307,6 +296,18 @@
             "group": "用户中心"
           }
         },
+		{
+		  "path": "user",
+		  "style": {
+		    "navigationBarTitleText": "个人中心",
+		    "enablePullDownRefresh": true
+		  },
+		  "meta": {
+		    "sync": true,
+		    "title": "个人中心",
+		    "group": "商城"
+		  }
+		},
         {
           "path": "goods-collect",
           "style": {
@@ -751,7 +752,7 @@
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "全屋家具",
+    "navigationBarTitleText": "华飞茗品 全屋家具",
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#FFFFFF",
     "navigationStyle": "custom"
@@ -763,9 +764,6 @@
       },
       {
              "pagePath": "pages/index/cart"
-      },
-      {
-        "pagePath": "pages/index/user"
       }
     ]
   }

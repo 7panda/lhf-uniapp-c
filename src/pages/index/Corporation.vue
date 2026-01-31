@@ -43,14 +43,14 @@
       <view class="contact-card ss-flex ss-row-between ss-col-center" @tap="sheep.$helper.util.makePhoneCall('400-xxx-xxxx')">
         <view>
           <view class="c-label">商务合作热线</view>
-          <view class="c-value">400-xxx-xxxx</view>
+          <view class="c-value">189-8179-2927</view>
         </view>
         <text class="_icon-forward" style="font-size: 40rpx; color: #ccc"></text>
       </view>
       
       <view class="address-info ss-m-t-30">
         <view class="c-label">地址</view>
-        <view class="c-value">四川省成都市华飞茗品家具产业园</view>
+        <view class="c-value">成都崇州市三江镇工业园</view>
       </view>
     </view>
 
