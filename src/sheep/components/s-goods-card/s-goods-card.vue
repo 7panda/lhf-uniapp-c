@@ -138,7 +138,9 @@
  * 商品模板，装修商品卡片
  * @description style 1:带tab 2：瀑布流，横向两个，上图下内容 3：大图，横向一个
  */
-import { computed, reactive, onMounted } from 'vue';
+import { computed, reactive, onMounted, defineEmits } from 'vue';
+// 向父组件传递商品数据
+const emit = defineEmits(['goodsLoaded'])
 import { onReachBottom } from '@dcloudio/uni-app';
 import sheep from '@/sheep';
 
@@ -214,6 +216,10 @@ async function getList() {
   state.pagination.data = goodsList;
   state.pagination.total = totalElements;
   state.goodsList = goodsList;
+  // 新增：首次加载时将商品数据传递给父组件（首页）
+  if (state.pagination.page === 1) {
+    emit('goodsLoaded', content)
+  }
   if (mode === 2) {
     rebuildMasonry();
   }

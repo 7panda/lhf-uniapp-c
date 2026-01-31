@@ -3,13 +3,13 @@
 		<s-layout title="首页" navbar="custom" tabbar="/pages/index/index" :navbarStyle="template.style?.navbar"
 			onShareAppMessage>
 			<!--轮播图 -->
-			     <view class="banner-content" v-if="bannerList.length">
-			       <swiper class="swiper-content" :indicator-dots="bannerIndicatorDots" :autoplay="true">
-			         <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">
-			           <image :src="it.src" class="img"/>
-			         </swiper-item>
-			       </swiper>
-			     </view>
+				 <view class="banner-content" v-if="bannerList.length">
+					 <swiper class="swiper-content" :indicator-dots="bannerIndicatorDots" :autoplay="true">
+						 <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">
+							 <image :src="it.src" class="img"/>
+						 </swiper-item>
+					 </swiper>
+				 </view>
 
 			<!-- 分类 -->
 			<template v-if="false">
@@ -34,7 +34,7 @@
 			<!--        </view>-->
 			<!--      </view>-->
 			<view class="goods-block">
-				<s-goods-card :data="goodsCard.data" :styles="goodsCard.style" />
+				<s-goods-card :data="goodsCard.data" :styles="goodsCard.style" @goodsLoaded="onGoodsLoaded" />
 			</view>
 		</s-layout>
 	</view>
@@ -53,62 +53,38 @@
 		onShareAppMessage
 	} from '@dcloudio/uni-app';
 	import sheep from '@/sheep';
+	// 单独引入banner接口（可选，若sheep.$api.banner已自动挂载可省略）
 	import $share from '@/sheep/platform/share';
 	//#ifdef H5
 	import weixin from '@/sheep/libs/sdk-h5-weixin';
+// import { sys } from '@/src/sheep/helper';
+import { sys } from '@/sheep/helper';
+
 	//#endif
 	const categoryList = ref([])
 	const shareData = ref($share.getShareInfo())
+	// 新增：轮播图数据（直接复用商品列表内容）
+	const bannerData = ref([])
 	const goodsCard = {
 		"data": {
 			"mode": 2,
 			"goodsFields": {
-				"title": {
-					"show": 1,
-				},
-				"subtitle": {
-					"show": 1,
-				},
-				"price": {
-					"show": 1,
-				},
-				"original_price": {
-					"show": 1,
-				},
-				"sales": {
-					"show": 1,
-				},
-				"stock": {
-					"show": 0,
-				}
+				"title": { "show": 1 },
+				"subtitle": { "show": 1 },
+				"price": { "show": 1 },
+				"original_price": { "show": 1 },
+				"sales": { "show": 1 },
+				"stock": { "show": 0 }
 			},
-			"buyNowStyle": {
-				// "mode": 2,
-				// "text": "立即购买",
-				// "color1": "#E9B461",
-				// "color2": "#EECC89",
-				// "src": "\/storage\/decorate\/20221115\/4782356b4587dc4f4a218f2540a0bafc.png",
-				// "right": '20rpx',
-				// "bottom":"18rpx"
-			},
-			"tagStyle": {
-				"show": 0,
-				"src": ""
-			},
-			params: {
-				orderField: 'sort',
-				orderSort: 'asc'
-			},
+			"buyNowStyle": {},
+			"tagStyle": { "show": 0, "src": "" },
+			params: { orderField: 'sort', orderSort: 'asc' },
 			"borderRadiusTop": 6,
 			"borderRadiusBottom": 6,
 			"space": 8
 		},
 		"style": {
-			"background": {
-				"type": "color",
-				"bgImage": "",
-				"bgColor": ""
-			},
+			"background": { "type": "color", "bgImage": "", "bgColor": "" },
 			"marginLeft": 8,
 			"marginRight": 8,
 			"marginTop": 0,
@@ -123,20 +99,18 @@
 	uni.hideTabBar();
 
 	const template = computed(() => sheep.$store('app').template.home);
-	const bannerBlock = computed(() => template.value?.data?.find((item) => item.type === 'imageBanner'))
-	const bannerIndicatorDots = computed(() => (bannerBlock.value?.data?.indicator ?? 1) !== 0)
+	// 轮播图指示点
+	const bannerIndicatorDots = computed(() => bannerData.value.length > 1)
+	// 轮播图数据适配
 	const bannerList = computed(() => {
-		const list = bannerBlock.value?.data?.list || template.value?.bannerList || []
-		return list.map((item, index) => ({
+		// 只用pic和id，其他字段不需要
+		return bannerData.value.map((item, index) => ({
 			id: item.id ?? `${index}`,
-			src: sheep.$url.cdn(item.src || item.poster || item.image || ''),
-			title: item.title || '',
-			link: item.url || item.link || item.path || '',
-			urlType: item.urlType || item.type || '',
-			query: item.query || {}
+			src: sheep.$url.cdn(item.pic),
+			title: item.title || item.name || '',
 		}))
 	})
-  const barHeight = ref(0)
+const barHeight = ref(0)
 	onLoad((options) => {
     const statusBarHeight = sheep.$platform.device.statusBarHeight;
     barHeight.value = (statusBarHeight + 54)+'px'
@@ -164,10 +138,18 @@
 		}
 		refreshShareData()
 		getCategoryList()
+		// getList()
 		//#ifdef H5
 		setOpenShare()
 		//#endif
 	});
+	// 商品卡片组件回调，接收商品数据并筛选轮播图内容
+	function onGoodsLoaded(goods) {
+		console.log('GOODS:', goods);
+		// 只保留pic不为null的商品，最多5个
+		bannerData.value = (goods || []).filter(item => item.pic).slice(0, 5);
+		console.log('BANNERDATA:', bannerData.value);
+	}
 	onShareAppMessage((res) => {
 		return {
 			...shareData.value
@@ -197,11 +179,9 @@
 	}
 
 	function clickBanner(item) {
-		if (!item) return;
-		const link = item.link || item.url || item.path;
-		if (link) {
-			sheep.$router.go(link, item.query || {});
-		}
+		if (!item || !item.id) return;
+		// 跳转到商品详情页，传递id
+		sheep.$router.go('/pages/goods/index', { id: item.id });
 	}
 	// 获取商品分类
 	function getCategoryList() {
@@ -282,4 +262,56 @@
 		}
 
 	}
+
+/* 轮播图样式优化 */
+.banner-content {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	margin: 60rpx 0 24rpx 0;
+	background: linear-gradient(135deg, #f8fafc 0%, #e8ecf3 100%);
+	border-radius: 20rpx;
+	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.04);
+}
+.swiper-content {
+	// min-width: 200rpx;
+	width: 90%;
+	max-width: 100%;
+	height: 300rpx;
+	border-radius: 16rpx;
+	overflow: hidden;
+	background: #fff;
+	box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.06);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.img {
+	height: 300rpx;
+	width: 100%;
+	max-width: 100%;
+	object-fit: cover;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	background: linear-gradient(135deg, #f5f5f5 60%, #e3e8ee 100%);
+	border-radius: 16rpx;
+	box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.08);
+	transition: box-shadow 0.3s, transform 0.3s;
+	/* 悬浮时略微放大和加深阴影 */
+}
+.img:active {
+	transform: scale(0.97);
+	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.12);
+}
+/* 图片加载过渡动画 */
+.img {
+	opacity: 0;
+	animation: imgFadeIn 0.6s ease-in forwards;
+}
+@keyframes imgFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
 </style>
