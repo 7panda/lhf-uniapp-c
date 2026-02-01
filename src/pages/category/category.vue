@@ -71,10 +71,10 @@
 </template>
 
 <script setup>
-  import secondOne from './components/second-one.vue';
-  import thirdOne from './components/third-one.vue';
-  import firstOne from './components/first-one.vue';
-  import firstTwo from './components/first-two.vue';
+  import secondOne from '../index/components/second-one.vue';
+  import thirdOne from '../index/components/third-one.vue';
+  import firstOne from '../index/components/first-one.vue';
+  import firstTwo from '../index/components/first-two.vue';
   import sheep from '@/sheep';
 
   import { onLoad, onReachBottom } from '@dcloudio/uni-app';

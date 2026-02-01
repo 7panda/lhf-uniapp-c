@@ -20,38 +20,6 @@
         "title": "首页",
         "group": "商城"
       }
-    },
-    
-    {
-      "path": "pages/index/category",
-      "style": {
-        "navigationBarTitleText": "商品分类",
-        "onReachBottomDistance": 50
-      },
-      "meta": {
-        "sync": true,
-        "title": "商品分类",
-        "group": "商城"
-      }
-    },
-   
-    {
-      "path": "pages/index/search",
-      "style": {
-        "navigationBarTitleText": "搜索"
-      },
-      "meta": {
-        "sync": true,
-        "title": "搜索",
-        "group": "商城"
-      }
-    },
-    {
-    	"path" : "pages/index/Corporation",
-    	"style" : 
-    	{
-    		"navigationBarTitleText" : "公司信息"
-    	}
     }
   ],
   "subPackages": [
@@ -84,7 +52,43 @@
         }
       ]
     },
-    
+
+    {
+      "root": "pages/search",
+      "pages": [
+        {
+          "path": "search",
+          "style": {
+            "navigationBarTitleText": "搜索"
+          },
+          "meta": {
+            "auth": false,
+            "sync": true,
+            "title": "搜索",
+            "group": "搜索"
+          }
+        }
+      ]
+
+    },
+    {
+      "root": "pages/corporation",
+      "pages": [
+        {
+          "path": "corporation",
+          "style": {
+            "navigationBarTitleText": "合作联系"
+          },
+          "meta": {
+            "auth": false,
+            "sync": true,
+            "title": "公司信息",
+            "group": "公司信息"
+          }
+        }
+        
+      ]
+    },
     {
       "root": "pages/public",
       "pages": [
@@ -156,15 +160,5 @@
     "navigationBarBackgroundColor": "#FFFFFF",
     "backgroundColor": "#FFFFFF",
     "navigationStyle": "custom"
-  },
-  "tabBar": {
-    "list": [
-      {
-        "pagePath": "pages/index/index"
-      },
-      {
-             "pagePath": "pages/index/category"
-      }
-    ]
   }
 }

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <s-layout
     :title="page.name"
     navbar="custom"
@@ -49,4 +49,4 @@
   onPageScroll(() => {});
 </script>
 
-<style></style>
+<style></style> -->
