@@ -72,11 +72,13 @@
    */
   import { ref, unref, reactive, computed } from 'vue';
   import sheep from '@/sheep';
+  // ✅ 导入 Store
+  import sheepStore from '@/sheep/store';
   import canvasPoster from './canvas-poster/index.vue';
   import { showShareModal, closeShareModal, showAuthModal } from '@/sheep/hooks/useModal';
 
-  const show = computed(() => sheep.$store('modal').share);
-  const shareConfig = computed(() => sheep.$store('app').platform.share);
+  const show = computed(() => sheepStore('modal').share);
+  const shareConfig = computed(() => sheepStore('app').platform.share);
   const SharePosterRef = ref('');
 
   const props = defineProps({
@@ -94,7 +96,7 @@
   // 生成海报分享
   const onShareByPoster = () => {
     closeShareModal();
-    if (!sheep.$store('user').isLogin) {
+    if (!sheepStore('user').isLogin) {
       showAuthModal();
       return;
     }

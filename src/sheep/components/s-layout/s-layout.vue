@@ -55,101 +55,51 @@
   </view>
 </template>
 
+
 <script setup>
   /**
    * 模板组件 - 提供页面公共组件，属性，方法
    */
   import { computed, reactive, ref } from 'vue';
-  import sheep from '@/sheep';
   import { isEmpty } from 'lodash';
   import { onShow } from '@dcloudio/uni-app';
   // #ifdef MP-WEIXIN
   import { onShareAppMessage } from '@dcloudio/uni-app';
   // #endif
+  
+  import sheep from '@/sheep';
+  import sheepStore from '@/sheep/store'; // ✅ 1. 引入 store
 
   const props = defineProps({
-    title: {
-      type: String,
-      default: '',
-    },
-    navbar: {
-      type: String,
-      default: 'normal',
-    },
-    opacityBgUi: {
-      type: String,
-      default: 'bg-white',
-    },
-    color: {
-      type: String,
-      default: '',
-    },
-    tools: {
-      type: String,
-      default: 'title',
-    },
-    keyword: {
-      type: String,
-      default: '',
-    },
+    title: { type: String, default: '' },
+    navbar: { type: String, default: 'normal' },
+    opacityBgUi: { type: String, default: 'bg-white' },
+    color: { type: String, default: '' },
+    tools: { type: String, default: 'title' },
+    keyword: { type: String, default: '' },
     navbarStyle: {
       type: Object,
-      default: () => ({
-        mode: '',
-        type: '',
-        color: '',
-        src: '',
-        list: [],
-        alwaysShow: 0,
-      }),
+      default: () => ({ mode: '', type: '', color: '', src: '', list: [], alwaysShow: 0 }),
     },
     bgStyle: {
       type: Object,
-      default: () => ({
-        src: '',
-        color: 'var(--ui-BG-1)',
-      }),
+      default: () => ({ src: '', color: 'var(--ui-BG-1)' }),
     },
-    tabbar: {
-      type: [String, Boolean],
-      default: '',
-    },
-    onShareAppMessage: {
-      type: [Boolean, Object],
-      default: true,
-    },
-    leftWidth: {
-      type: [Number, String],
-      default: 100,
-    },
-    rightWidth: {
-      type: [Number, String],
-      default: 100,
-    },
-    defaultSearch: {
-      type: String,
-      default: '',
-    },
-    //展示悬浮按钮
-    showFloatButton: {
-      type: Boolean,
-      default: false,
-    },
-    //展示返回按钮
-    showLeftButton: {
-      type: Boolean,
-      default: false,
-    },
+    tabbar: { type: [String, Boolean], default: '' },
+    onShareAppMessage: { type: [Boolean, Object], default: true },
+    leftWidth: { type: [Number, String], default: 100 },
+    rightWidth: { type: [Number, String], default: 100 },
+    defaultSearch: { type: String, default: '' },
+    showFloatButton: { type: Boolean, default: false },
+    showLeftButton: { type: Boolean, default: false },
   });
+
   const emits = defineEmits(['search']);
 
-  const sysStore = sheep.$store('sys');
-  const userStore = sheep.$store('user');
-  const appStore = sheep.$store('app');
-  const modalStore = sheep.$store('modal');
-  const sys = computed(() => sysStore);
+  // ✅ 2. 修复：使用 sheepStore 获取状态，而不是 sheep.$store
+  const sys = computed(() => sheepStore('sys'));
 
-  // 导航栏模式(因为有自定义导航栏 需要计算)
+  // 导航栏模式
   const navbarMode = computed(() => {
     if (props.navbar === 'normal' || props.navbarStyle.mode === 'normal') {
       return 'normal';
@@ -211,6 +161,7 @@
     }
   });
 </script>
+
 
 <style lang="scss" scoped>
   .page-app {

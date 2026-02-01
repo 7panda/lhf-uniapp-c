@@ -23,9 +23,12 @@
 <script setup>
   import { reactive, computed } from 'vue';
   import sheep from '@/sheep';
+  // ✅ 导入
+  import sheepStore from '@/sheep/store';
+  import sheepRouter from '@/sheep/router';
   import { showMenuTools, closeMenuTools } from '@/sheep/hooks/useModal';
 
-  const show = computed(() => sheep.$store('modal').menu);
+  const show = computed(() => sheepStore('modal').menu);
 
   function onClick(item, index) {
     if (index === 1 || index > 3){
@@ -33,7 +36,7 @@
       return
     }
     closeMenuTools();
-    if (item.url) sheep.$router.go(item.url);
+    if (item.url) sheepRouter.go(item.url);
   }
 
   const list = [

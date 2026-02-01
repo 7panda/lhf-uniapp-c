@@ -110,6 +110,9 @@
 <script setup>
   import { computed, reactive } from 'vue';
   import sheep from '@/sheep';
+  // ✅ 导入 Store
+  import sheepStore from '@/sheep/store';
+  import sheepRouter from '@/sheep/router';
   import accountLogin from './components/account-login.vue';
   import smsLogin from './components/sms-login.vue';
   import wechatLogin from './components/wechat-login.vue';
@@ -120,9 +123,9 @@
   import changeUsername from './components/change-username.vue';
   import { closeAuthModal } from '@/sheep/hooks/useModal';
 
-  const appInfo = computed(() => sheep.$store('app').info);
+  const appInfo = computed(() => sheepStore('app').info);
 
-  const modalStore = sheep.$store('modal');
+  const modalStore = sheepStore('modal');
   // 授权弹窗类型
   const authType = computed(() => modalStore.auth);
 
@@ -138,7 +141,7 @@
   // 查看协议
   function onProtocol(id, title) {
     closeAuthModal();
-    sheep.$router.go('/pages/public/richtext', {
+    sheepRouter.go('/pages/public/richtext', {
       id,
       title,
     });
@@ -153,7 +156,7 @@
     const loginRes = await sheep.$platform.useProvider(provider).login(event?.detail || null);
     if (loginRes) {
       closeAuthModal();
-      const userInfo = await sheep.$store('user').getInfo();
+      const userInfo = await sheepStore('user').getInfo();
     }
   };
 </script>

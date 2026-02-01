@@ -37,21 +37,14 @@
 </template>
 
 <script setup>
-  /**
-   *  装修组件 - 自定义标题栏
-   *
-   *
-   * @property {Number | String}  alwaysShow = [0,1]			    - 是否常驻
-   * @property {Number | String}  mode = [inner]			    	- 是否沉浸式
-   * @property {String | Number} type 		 					- 标题背景模式
-   * @property {String} color 		 							- 页面背景色
-   * @property {String} src 		 								- 页面背景图片
-   */
   import { computed, unref } from 'vue';
   import sheep from '@/sheep';
   import Navbar from './components/navbar.vue';
   import NavbarItem from './components/navbar-item.vue';
   import { showMenuTools } from '@/sheep/hooks/useModal';
+  
+  // ✅ 1. 单独引入路由模块
+  import sheepRouter from '@/sheep/router'; 
 
   const props = defineProps({
     data: {
@@ -63,7 +56,10 @@
       default: false,
     },
   });
-  const hasHistory = sheep.$router.hasHistory();
+
+  // ✅ 2. 修复：使用 sheepRouter（需要是 computed 以支持响应式更新）
+  const hasHistory = computed(() => sheepRouter.hasHistory());
+
   const sticky = computed(() => {
     if (props.data.mode == 'inner') {
       if (props.data.alway) {
@@ -74,6 +70,7 @@
       return false;
     }
   });
+
   const navList = computed(() => {
     if (!props.data.list) return [];
     // #ifdef MP
@@ -81,6 +78,7 @@
     // #endif
     return props.data.list.app;
   });
+
   // 单元格大小
   const windowWidth = sheep.$platform.device.windowWidth;
   const cell = computed(() => {
@@ -92,6 +90,7 @@
       return cell;
     }
   });
+
   // 解析位置
   const parseImgStyle = (item) => {
     let obj = {
@@ -101,6 +100,7 @@
     };
     return obj;
   };
+
   const isAlway = computed(() =>
     props.data.mode === 'inner' ? Boolean(props.data.alwaysShow) : true,
   );
@@ -112,6 +112,7 @@
       : props.data.mode === 'inner',
   );
   const isPlaceholder = computed(() => props.data.mode === 'normal');
+  
   const bgStyles = computed(() => {
     if (props.data.type) {
       return {
@@ -125,11 +126,13 @@
 
   function onClickLeft() {
     if (hasHistory) {
-      sheep.$router.back();
+      // ✅ 3. 修复：使用 sheepRouter
+      sheepRouter.back();
     } else {
-      sheep.$router.go('/pages/index/index');
+      sheepRouter.go('/pages/index/index');
     }
   }
+  
   function onClickRight() {
     showMenuTools();
   }

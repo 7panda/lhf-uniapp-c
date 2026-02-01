@@ -1,5 +1,5 @@
 <template>
-  <view class="u-page__item" v-if="tabbar?.list.length > 0">
+  <view class="u-page__item" v-if="tabbar?.list?.length > 0">
     <su-tabbar
       :value="path"
       :fixed="true"
@@ -17,7 +17,7 @@
         :name="item.url"
         :isCenter="getTabbarCenter(index)"
         :centerImage="sheep.$url.cdn(item.inactiveIcon)"
-        @tap="sheep.$router.go(item.url)"
+        @tap="onTab(item)"
       >
         <template v-slot:active-icon>
           <image class="u-page__item__slot-icon" :src="sheep.$url.cdn(item.activeIcon)"></image>
@@ -33,33 +33,33 @@
 <script setup>
   import { computed, unref } from 'vue';
   import sheep from '@/sheep';
+  // ✅ 1. 引入 store 和 router
+  import sheepStore from '@/sheep/store'; 
+  import sheepRouter from '@/sheep/router';
 
+  const props = defineProps({
+    path: { type: String, default: '' },
+    defaultTabbar: { type: Object, default: () => ({}) }
+  });
+
+  // ✅ 2. 替换 store 获取方式
   const tabbar = computed(() => {
-    return sheep.$store('app').template.basic?.tabbar;
+    // 原来是 sheep.$store('app').tabbar
+    const appTabbar = sheepStore('app').tabbar; 
+    return appTabbar && appTabbar.list ? appTabbar : props.defaultTabbar;
   });
 
   const tabbarStyle = computed(() => {
-    const backgroundStyle = tabbar.value.background;
-    if (backgroundStyle.type == 'color') return { background: backgroundStyle.bgColor };
-    if (backgroundStyle.type == 'image')
-      return {
-        background: `url(${sheep.$url.cdn(
-          backgroundStyle.bgImage,
-        )}) no-repeat top center / 100% auto`,
-      };
+    const appTabbar = sheepStore('app').tabbar;
+    return appTabbar && appTabbar.style ? appTabbar.style : {};
   });
 
-  const getTabbarCenter = (index) => {
-    if (unref(tabbar).mode !== 2) return false;
-    return unref(tabbar).list % 2 > 0
-      ? Math.ceil(unref(tabbar).list.length / 2) === index + 1
-      : false;
-  };
-
-  const props = defineProps({
-    path: String,
-    default: '',
-  });
+  // ✅ 3. 替换 router 跳转
+  function onTab(item) {
+    if(item.url) {
+       sheepRouter.go(item.url);
+    }
+  }
 </script>
 
 <style lang="scss">
