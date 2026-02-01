@@ -16,7 +16,7 @@ export default ({ mode }) => {
                 includes: ['path', 'aliasPath', 'name', 'meta'],
             }),
             // 如果你完全不使用直播功能，建议在这里直接传入 false
-            mpliveMainfestPlugin(env.SHOPRO_MPLIVE_ON === 'true')
+            mpliveMainfestPlugin(env.SHOPRO_MPLIVE_ON === 'false')
         ],
         
         // --- 新增/优化构建配置 ---
