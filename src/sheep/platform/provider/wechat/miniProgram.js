@@ -12,11 +12,12 @@ function load() {
   checkUpdate();
   // const sessionStatus = await checkSession();
   // 小程序的接口改动太频繁了 强制每次进入都重新获取
-  const sessionStatus = false;
-  if (!sessionStatus) {
-    getSessionId();
-  }
+  // const sessionStatus = false;
+  // if (!sessionStatus) {
+  //   getSessionId();
+  // }
   // getSubscribeTemplate();
+  console.log('已禁用自动登录');
 }
 // 微信小程序授权登陆
 const login = async (e) => {

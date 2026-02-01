@@ -1,10 +1,21 @@
-import $store from '@/sheep/store';
-import $platform from '@/sheep/platform';
-import $router from '@/sheep/router';
-import $url from '@/sheep/url';
-// #ifdef H5
-import $wxsdk from '@/sheep/libs/sdk-h5-weixin';
-// #endif
+// 延迟导入：避免循环引用
+let $store;
+let $platform;
+let $router;
+let $url;
+let $wxsdk;
+
+const initDependencies = () => {
+  if (!$store) {
+    $store = require('@/sheep/store').default;
+    $platform = require('@/sheep/platform').default;
+    $router = require('@/sheep/router').default;
+    $url = require('@/sheep/url').default;
+    // #ifdef H5
+    $wxsdk = require('@/sheep/libs/sdk-h5-weixin').default;
+    // #endif
+  }
+};
 
 // 设置分享的平台渠道: 1=H5,2=微信公众号网页,3=微信小程序,4=App,...按需扩展
 const platformMap = ['H5', 'WechatOfficialAccount', 'WechatMiniProgram', 'App'];
@@ -25,6 +36,7 @@ const getShareInfo = (
     type: 'user',
   },
 ) => {
+  initDependencies(); // 初始化依赖
   let shareInfo = {
     title: '', // 分享标题
     desc: '', // 描述
@@ -62,6 +74,7 @@ const getShareInfo = (
 
 // 构造spm分享参数
 const buildSpmQuery = (params) => {
+  initDependencies(); // 初始化依赖
   const user = $store('user');
   let shareId = '0'; // 设置分享者用户ID
   if (typeof params.shareId === 'undefined') {
@@ -99,6 +112,7 @@ const buildSpmLink = (query, linkAddress = '') => {
 
 // 解析Spm
 const decryptSpm = (spm) => {
+  initDependencies(); // 初始化依赖
   const user = $store('user');
   let shareParamsArray = spm.split('.');
   let shareParams = {
@@ -169,6 +183,7 @@ const decryptSpm = (spm) => {
 
 // 更新公众号分享sdk
 const updateShareInfo = (shareInfo) => {
+  initDependencies(); // 初始化依赖
   // #ifdef H5
   if ($platform.name === 'WechatOfficialAccount') {
     $wxsdk.updateShareInfo(shareInfo);

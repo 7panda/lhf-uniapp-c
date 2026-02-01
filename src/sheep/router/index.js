@@ -1,4 +1,13 @@
-import $store from '@/sheep/store';
+// 延迟导入：避免循环引用
+let $store = null;
+
+const getStore = () => {
+  if (!$store) {
+    $store = require('@/sheep/store').default;
+  }
+  return $store;
+};
+
 import { isString, isEmpty, startsWith, isObject, isNil } from 'lodash';
 import throttle from '@/sheep/helper/throttle';
 
@@ -61,7 +70,7 @@ const _go = (
   // --- 3. 核心鉴权优化 (替代 nextRoute.meta.auth) ---
   // 如果路径包含需要登录的关键词，且用户未登录
   const needLogin = AUTH_required.some(prefix => page.includes(prefix));
-  if (needLogin && !$store('user').isLogin) {
+  if (needLogin && !getStore()('user').isLogin) {
     // 直接跳转登录页，避免循环调用 showAuthModal
     uni.navigateTo({ url: '/pages/index/login' });
     return;

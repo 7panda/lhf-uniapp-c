@@ -1,5 +1,14 @@
-import $store from '@/sheep/store';
 import { staticUrl } from '@/sheep/config';
+
+// 延迟导入：避免循环引用
+let $store = null;
+
+const getStore = () => {
+  if (!$store) {
+    $store = require('@/sheep/store').default;
+  }
+  return $store;
+};
 
 const cdn = (url = '', cdnurl = '') => {
   if (!url) return '';
@@ -7,7 +16,7 @@ const cdn = (url = '', cdnurl = '') => {
     return url;
   }
   if (cdnurl === '') {
-    cdnurl = $store('app').info.cdnurl;
+    cdnurl = getStore()('app').info.cdnurl;
   }
   return cdnurl + url;
 };
@@ -52,7 +61,7 @@ export default {
  * @return string
  */
 function append_thumbnail_params(url, params) {
-  const filesystem = $store('app').info.filesystem;
+  const filesystem = getStore()('app').info.filesystem;
   if (filesystem === 'public') {
     return url;
   }
