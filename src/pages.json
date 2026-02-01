@@ -81,56 +81,7 @@
             "title": "商品列表",
             "group": "商品"
           }
-        },
-        {
-          "path": "comment/add",
-          "style": {
-            "navigationBarTitleText": "评价商品"
-          },
-          "meta": {
-            "auth": true
-          }
-        },
-        {
-          "path": "comment/list",
-          "style": {
-            "navigationBarTitleText": "商品评价"
-          }
         }
-      ]
-    },
-
-    
-    {
-      "root": "pages/commission",
-      "pages": [
-        
-        {
-          "path": "goods",
-          "style": {
-            "navigationBarTitleText": "推广商品"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "推广商品",
-            "group": "分销商城"
-          }
-        },
-        
-        {
-          "path": "share-log",
-          "style": {
-            "navigationBarTitleText": "分享记录"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "分享记录",
-            "group": "分销商城"
-          }
-        }
-        
       ]
     },
     

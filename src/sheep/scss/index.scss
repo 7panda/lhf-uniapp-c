@@ -2,13 +2,13 @@
 @import './ui';
 
 /* 字体文件 */
-@font-face {
-  font-family: OPPOSANS;
-  src: url('~@/sheep/scss/font/OPPOSANS-M-subfont.ttf');
-}
-.font-OPPOSANS {
-  font-family: OPPOSANS;
-}
+// @font-face {
+//   font-family: OPPOSANS;
+//   src: url('~@/sheep/scss/font/OPPOSANS-M-subfont.ttf');
+// }
+// .font-OPPOSANS {
+//   font-family: OPPOSANS;
+// }
 page {
   -webkit-overflow-scrolling: touch; // 解决ios滑动不流畅
   height: 100%;

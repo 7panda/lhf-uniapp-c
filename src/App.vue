@@ -4,6 +4,8 @@
 		onShow,
 		onError
 	} from '@dcloudio/uni-app';
+
+	
 	import {
 		ShoproInit
 	} from './sheep';
