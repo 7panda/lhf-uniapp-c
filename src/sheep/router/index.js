@@ -1,4 +1,13 @@
-import $store from '@/sheep/store';
+// 延迟导入：避免循环引用
+let $store = null;
+
+const getStore = () => {
+  if (!$store) {
+    $store = require('@/sheep/store').default;
+  }
+  return $store;
+};
+
 import { showAuthModal, showShareModal } from '@/sheep/hooks/useModal';
 import { isNumber, isString, isEmpty, startsWith, isObject, isNil, clone } from 'lodash';
 import throttle from '@/sheep/helper/throttle';
@@ -58,7 +67,7 @@ const _go = (
   }
 
   // 页面登录拦截
-  if (nextRoute.meta?.auth && !$store('user').isLogin) {
+  if (nextRoute.meta?.auth && !getStore()('user').isLogin) {
     showAuthModal();
     return;
   }
@@ -68,10 +77,10 @@ const _go = (
     url += `?${query}`;
   }
 
-  // 跳转底部导航
+  // 跳转底部导航（tabBar 页面必须使用 switchTab）
   if (TABBAR.includes(page)) {
     uni.switchTab({
-      url,
+      url: page, // switchTab 不支持参数，只传路径
     });
     return;
   }
@@ -84,8 +93,18 @@ const _go = (
     return;
   }
 
+  // 普通跳转（增加失败重试，防止 TABBAR 配置漏网之鱼）
   uni.navigateTo({
     url,
+    fail: (err) => {
+      // 如果报错是因为跳转到了 Tabbar 页面，尝试切换 tab
+      if (err.errMsg && err.errMsg.includes('tabbar')) {
+        console.warn(`检测到 tabBar 页面 ${page}，自动切换为 switchTab`);
+        uni.switchTab({ url: page });
+      } else {
+        console.error('路由跳转失败:', err);
+      }
+    }
   });
 };
 
