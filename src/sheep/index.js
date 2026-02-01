@@ -5,15 +5,15 @@ import $platform from '@/sheep/platform';
 import $helper from '@/sheep/helper';
 import zIndex from '@/sheep/config/zIndex.js';
 import $store from '@/sheep/store';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import duration from 'dayjs/plugin/duration';
-import 'dayjs/locale/zh-cn';
-import {Base64} from "js-base64";
+// import dayjs from 'dayjs';
+// import relativeTime from 'dayjs/plugin/relativeTime';
+// import duration from 'dayjs/plugin/duration';
+// import 'dayjs/locale/zh-cn';
+// import {Base64} from "js-base64";
 
-dayjs.locale('zh-cn');
-dayjs.extend(relativeTime);
-dayjs.extend(duration);
+// dayjs.locale('zh-cn');
+// dayjs.extend(relativeTime);
+// dayjs.extend(duration);
 
 const sheep = {
   $api,

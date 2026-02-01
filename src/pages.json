@@ -104,30 +104,7 @@
     {
       "root": "pages/commission",
       "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "分销"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "分销中心",
-            "group": "分销商城"
-          }
-        },
-        {
-          "path": "apply",
-          "style": {
-            "navigationBarTitleText": "申请分销商"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "申请分销商",
-            "group": "分销商城"
-          }
-        },
+        
         {
           "path": "goods",
           "style": {
@@ -140,18 +117,7 @@
             "group": "分销商城"
           }
         },
-        {
-          "path": "order",
-          "style": {
-            "navigationBarTitleText": "分销订单"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "分销订单",
-            "group": "分销商城"
-          }
-        },
+        
         {
           "path": "share-log",
           "style": {
@@ -163,19 +129,8 @@
             "title": "分享记录",
             "group": "分销商城"
           }
-        },
-        {
-          "path": "team",
-          "style": {
-            "navigationBarTitleText": "我的团队"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "我的团队",
-            "group": "分销商城"
-          }
         }
+        
       ]
     },
     
