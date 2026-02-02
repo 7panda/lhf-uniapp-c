@@ -3,7 +3,7 @@ export default {
        return {
             share:{
                title: '自定义分享标题',
-               imageUrl:'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg',
+               imageUrl:'',
             }
        }
     },
