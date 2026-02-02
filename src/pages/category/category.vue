@@ -1,5 +1,5 @@
 <template>
-  <s-layout title="分类" tabbar="/pages/index/category" :bgStyle="{ color: '#fff' }">
+  <s-layout title="分类" tabbar="/pages/category/category" :bgStyle="{ color: '#fff' }">
     <view class="s-category">
       <view class="three-level-wrap ss-flex ss-col-top" :style="[{ height: pageHeight + 'px' }]">
         <scroll-view class="side-menu-wrap" scroll-y :style="[{ height: pageHeight + 'px' }]">
