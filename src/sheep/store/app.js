@@ -127,13 +127,13 @@ const app = defineStore({
                         {
                             "inactiveIcon": "\/storage\/decorate\/20221115\/113eb988efc1fe17cb90cdf5311e5b63.png",
                             "activeIcon": "\/storage\/decorate\/20221115\/2a3992a220f306d129ac1659304694bd.gif",
-                            "url": "\/pages\/index\/category",
+                            "url": "\/pages\/category\/category",
                             "text": "分类"
                         },
                         {
                             "inactiveIcon": "\/storage\/decorate\/20221115\/f930c59d338a97a158ee53cb65bde082.png",
                             "activeIcon": "\/storage\/decorate\/20221115\/1130ab158b1c31b1e1d356fa78bb5f4a.gif",
-                            "url": "\/pages\/index\/Corporation",
+                            "url": "\/pages\/corporation\/corporation",
                             "text": "与我们合作联系"
                         }
                     ],
@@ -162,7 +162,7 @@ const app = defineStore({
                     "list": [
                         {
                             "src": "\/storage\/decorate\/20221115\/6bfd03d0ad7f3d7f6ba7494c903cdc0c.png",
-                            "url": "\/pages\/index\/category?id=21",
+                            "url": "\/pages\/category\/category?id=21",
                             "show": 2
                         }
                     ]

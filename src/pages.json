@@ -39,6 +39,7 @@
           }
         },
         
+        
         {
           "path": "list",
           "style": {
@@ -90,31 +91,27 @@
       ]
     },
     {
-      "root": "pages/public",
+      "root": "pages/category",
       "pages": [
         {
-          "path": "setting",
+          "path": "category",
           "style": {
-            "navigationBarTitleText": "系统设置"
+            "navigationBarTitleText": "分类"
           },
           "meta": {
+            "auth": false,
             "sync": true,
-            "title": "系统设置",
-            "group": "通用"
+            "title": "分类",
+            "group": "分类"
           }
-        },
-        {
-          "path": "feedback",
-          "style": {
-            "navigationBarTitleText": "问题反馈"
-          },
-          "meta": {
-            "auth": true,
-            "sync": true,
-            "title": "问题反馈",
-            "group": "通用"
-          }
-        },
+        }
+      ]
+    },
+    {
+      "root": "pages/public",
+      "pages": [
+    
+       
         {
           "path": "richtext",
           "style": {
@@ -126,17 +123,7 @@
             "group": "通用"
           }
         },
-        {
-          "path": "faq",
-          "style": {
-            "navigationBarTitleText": "常见问题"
-          },
-          "meta": {
-            "sync": true,
-            "title": "常见问题",
-            "group": "通用"
-          }
-        },
+        
         {
           "path": "error",
           "style": {

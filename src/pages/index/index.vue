@@ -78,8 +78,6 @@
     }
   };
 
-  uni.hideTabBar();
-
   const template = computed(() => sheep.$store('app').template.home);
   const bannerIndicatorDots = computed(() => bannerData.value.length > 1);
   const bannerList = computed(() => {

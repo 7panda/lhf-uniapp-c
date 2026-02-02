@@ -22,7 +22,7 @@
         elBackground="#fff"
         :height="height"
         :width="width"
-        @click="sheep.$router.go('/pages/index/search')"
+        @click="sheep.$router.go('/pages/search/search')"
       ></s-search-block>
     </view>
   </view>

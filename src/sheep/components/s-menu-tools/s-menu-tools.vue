@@ -43,40 +43,12 @@
       title: '首页',
     },
     {
-      url: '/pages/index/search',
+      url: '/pages/search/search',
       icon: '/static/img/shop/tools/search.png',
       title: '搜索',
-    },
-    {
-      url: '/pages/index/user',
-      icon: '/static/img/shop/tools/user.png',
-      title: '个人中心',
-    },
-    {
-      url: '/pages/index/cart',
-      icon: '/static/img/shop/tools/cart.png',
-      title: '购物车',
-    },
-    {
-      url: '/pages/user/goods-log',
-      icon: '/static/img/shop/tools/browse.png',
-      title: '浏览记录',
-    },
-    {
-      url: '/pages/user/goods-collect',
-      icon: '/static/img/shop/tools/collect.png',
-      title: '我的收藏',
-    },
-    {
-      url: '/pages/public/feedback',
-      icon: '/static/img/shop/tools/feedback.png',
-      title: '意见反馈',
-    },
-    {
-      url: '/pages/chat/index',
-      icon: '/static/img/shop/tools/service.png',
-      title: '客服',
-    },
+    }
+    
+    
   ];
 </script>
 

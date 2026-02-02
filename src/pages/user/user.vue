@@ -19,9 +19,6 @@
   import { onShow, onPageScroll, onPullDownRefresh } from '@dcloudio/uni-app';
   import sheep from '@/sheep';
 
-  // 隐藏原生tabBar
-  uni.hideTabBar();
-
   const template = computed(() => sheep.$store('app').template.user);
   const isLogin = computed(() => sheep.$store('user').isLogin);
 

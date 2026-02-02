@@ -1,12 +1,6 @@
-// 延迟导入：避免循环引用
-let $store = null;
+import $store from '@/sheep/store';
 
-const getStore = () => {
-  if (!$store) {
-    $store = require('@/sheep/store').default;
-  }
-  return $store;
-};
+const getStore = () => $store;
 
 import { showAuthModal, showShareModal } from '@/sheep/hooks/useModal';
 import { isNumber, isString, isEmpty, startsWith, isObject, isNil, clone } from 'lodash';
