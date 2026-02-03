@@ -40,12 +40,15 @@
           v-if="shareIcon"
           class="detail-tabbar-item ss-flex ss-flex-col ss-row-center ss-col-center"
           style="position: relative;"
+          @tap="onShareClick"
         >
+          <!-- #ifdef MP-WEIXIN -->
           <button
             open-type="share"
             class="ss-reset-button"
             style="position: absolute; width: 100%; height: 100%; z-index: 1; opacity: 0;"
           ></button>
+          <!-- #endif -->
           <image
             class="item-icon"
             :src="sheep.$url.static('/static/img/shop/goods/share.png')"
@@ -147,6 +150,13 @@
     // sheep.$router.go('/pages/chat/index', {
     //   id: props.modelValue.id,
     // });
+  };
+
+  // H5环境分享处理
+  const onShareClick = () => {
+    // #ifdef H5
+    showShareModal();
+    // #endif
   };
 
   
