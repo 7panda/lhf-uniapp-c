@@ -28,7 +28,7 @@
   const show = computed(() => sheep.$store('modal').menu);
 
   function onClick(item, index) {
-    if (index === 1 || index > 3){
+    if (index > 1) {
       sheep.$helper.toast('功能暂未开发')
       return
     }
