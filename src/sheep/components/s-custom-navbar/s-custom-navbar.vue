@@ -136,6 +136,7 @@
 </script>
 
 <style lang="scss" scoped>
+  @import '@/sheep/scss/icon/_sheepicon.scss';
   .nav-box {
     width: 750rpx;
     position: relative;

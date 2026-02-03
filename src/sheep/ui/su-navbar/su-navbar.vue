@@ -275,6 +275,8 @@
 </script>
 
 <style lang="scss" scoped>
+  @import '@/sheep/scss/icon/_sheepicon.scss';
+
   .bg-main {
     background: linear-gradient(90deg, var(--ui-BG-Main), var(--ui-BG-Main-gradient)) !important;
     color: #fff !important;
