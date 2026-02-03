@@ -147,6 +147,8 @@
 </script>
 
 <style lang="scss" scoped>
+  @import '@/sheep/scss/icon/_sheepicon.scss';
+
   .icon-box {
     box-shadow: 0px 0px 4rpx rgba(51, 51, 51, 0.08), 0px 4rpx 6rpx 2rpx rgba(102, 102, 102, 0.12);
     border-radius: 30rpx;
