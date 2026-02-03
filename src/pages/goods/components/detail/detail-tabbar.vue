@@ -24,7 +24,7 @@
             <view class="item-title">收藏</view>
           </block>
         </view>
-        <view
+        <!-- <view
           v-if="serviceIcon"
           class="detail-tabbar-item ss-flex ss-flex-col ss-row-center ss-col-center"
           @tap="exportExcel"
@@ -35,7 +35,7 @@
             mode="aspectFit"
           ></image>
           <view class="item-title">客服</view>
-        </view>
+        </view> -->
         <view
           v-if="shareIcon"
           class="detail-tabbar-item ss-flex ss-flex-col ss-row-center ss-col-center"
@@ -134,15 +134,29 @@
     uni.setStorageSync('tabbar', e);
   };
   async function onFavorite() {
-    sheep.$helper.toast('功能暂未开发')
-    // const { error } = await sheep.$api.user.favorite.do(props.modelValue.id);
-    // if (error === 0) {
-    //   if (props.modelValue.favorite) {
-    //     props.modelValue.favorite = 0;
-    //   } else {
-    //     props.modelValue.favorite = 1;
-    //   }
-    // }
+    const goodsId = props.modelValue?.product?.id ?? props.modelValue?.id;
+    console.log('[favorite] click, goodsId:', goodsId);
+    if (!goodsId) return;
+
+    let favorites = uni.getStorageSync('my_favorites') || [];
+    const targetId = String(goodsId);
+    favorites = Array.isArray(favorites) ? favorites.map(String) : [];
+
+    console.log('[favorite] before:', favorites);
+
+    const index = favorites.indexOf(targetId);
+    if (index === -1) {
+      favorites.push(targetId);
+      props.modelValue.favorite = true;
+      sheep.$helper.toast('收藏成功');
+    } else {
+      favorites.splice(index, 1);
+      props.modelValue.favorite = false;
+      sheep.$helper.toast('已取消收藏');
+    }
+
+    uni.setStorageSync('my_favorites', favorites);
+    console.log('[favorite] after:', favorites, 'favorite:', props.modelValue.favorite);
   }
 
   const onChat = () => {
@@ -188,7 +202,8 @@
     background: #fff;
 
     .detail-tabbar-item {
-      width: 100rpx;
+      flex: 1;
+      min-width: 0;
 
       .item-icon {
         width: 40rpx;

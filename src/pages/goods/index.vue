@@ -274,6 +274,15 @@
     };
   });
 
+  const checkFavoriteStatus = (id) => {
+    const favorites = uni.getStorageSync('my_favorites') || [];
+    if (!Array.isArray(favorites)) return false;
+    const targetId = String(id);
+    const result = favorites.map(String).includes(targetId);
+    console.log('[favorite] check', { id: targetId, favorites, result });
+    return result;
+  };
+
   onLoad(async (options) => {
     // 非法参数
     if (!options.id) {
@@ -286,6 +295,9 @@
       console.log('商品数据：', res)
       state.skeletonLoading = false;
       state.goodsInfo = res;
+      const currentGoodsId = state.goodsInfo?.product?.id ?? state.goodsInfo?.id;
+      state.goodsInfo.favorite = checkFavoriteStatus(currentGoodsId);
+      console.log('[favorite] sync on load:', currentGoodsId, state.goodsInfo.favorite);
       const albumPics = res?.product?.albumPics;
       let albumList = [];
       if (Array.isArray(albumPics)) {
