@@ -82,9 +82,9 @@
   const bannerIndicatorDots = computed(() => bannerData.value.length > 1);
   const bannerList = computed(() => {
     return bannerData.value.map((item, index) => ({
-      id: item.id ?? `${index}`,
-      src: sheep.$url.cdn(item.pic),
-      title: item.title || item.name || '',
+      id: item.product?.id ?? `${index}`,
+      src: sheep.$url.cdn(item.product?.pic),
+      title: item.product?.name || item.product?.title || '',
     }))
   });
 
@@ -116,7 +116,49 @@
   });
 
   function onGoodsLoaded(goods) {
-    bannerData.value = (goods || []).filter(item => item.pic).slice(0, 5);
+    // 获取当前日期的 day（几号）
+    const now = new Date();
+    const currentDay = now.getDate();
+
+    // 提取日期字符串中的日期数字
+    const extractDay = (dateStr) => {
+      if (!dateStr) return null;
+      const match = String(dateStr).match(/(\d{4})-(\d{2})-(\d{2})/);
+      return match ? parseInt(match[3]) : null;
+    };
+
+    // 日期匹配函数
+    const matchesDay = (item) => {
+      // 优先级1：检查 product.updateTime 的 day
+      const updateTimeDay = extractDay(item.product?.updateTime);
+      if (updateTimeDay !== null && updateTimeDay === currentDay) {
+        return true;
+      }
+
+      // 优先级2：检查 product.createTime 的 day
+      const createTimeDay = extractDay(item.product?.createTime);
+      if (createTimeDay !== null && createTimeDay === currentDay) {
+        return true;
+      }
+
+      // 优先级3：用 product.id % day 的个位数来匹配
+      if (item.product?.id !== undefined && item.product?.id !== null) {
+        const idModDay = (item.product.id % currentDay) % 10;
+        if (idModDay === currentDay % 10) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    // 筛选匹配的商品，有图片则取前5个
+    const filtered = (goods || []).filter(item => item.product?.pic && matchesDay(item)).slice(0, 5);
+
+    console.log('[banner] currentDay:', currentDay, 'matched:', filtered.length);
+
+    // 如果没有匹配到日期相关的商品，则降级为直接取有图片的前5个
+    bannerData.value = filtered.length > 0 ? filtered : (goods || []).filter(item => item.product?.pic).slice(0, 5);
   }
 
   onShareAppMessage(() => ({ ...shareData.value }));
