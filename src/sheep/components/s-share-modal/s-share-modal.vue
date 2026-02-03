@@ -74,6 +74,7 @@
   import sheep from '@/sheep';
   import canvasPoster from './canvas-poster/index.vue';
   import { showShareModal, closeShareModal, showAuthModal } from '@/sheep/hooks/useModal';
+  const modalStore = sheep.$store('modal');
 
   const show = computed(() => sheep.$store('modal').share);
   const shareConfig = computed(() => sheep.$store('app').platform.share);

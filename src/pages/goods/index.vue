@@ -145,7 +145,7 @@
 
 <script setup>
   import { reactive, computed } from 'vue';
-  import { onLoad, onPageScroll } from '@dcloudio/uni-app';
+  import { onLoad, onPageScroll, onShareAppMessage } from '@dcloudio/uni-app';
   import sheep from '@/sheep';
   import { formatSales, formatGoodsSwiper, formatPrice } from '@/sheep/hooks/useGoods';
   import detailNavbar from './components/detail/detail-navbar.vue';
@@ -238,12 +238,11 @@
   }
 
   const shareInfo = computed(() => {
-    return {}
     if (isEmpty(state.goodsInfo)) return {};
     return sheep.$platform.share.getShareInfo(
       {
-        title: state.goodsInfo.title,
-        image: sheep.$url.cdn(state.goodsInfo.image),
+        title: state.goodsInfo.product.name,
+        image: sheep.$url.cdn(state.goodsInfo.product.pic),
         desc: state.goodsInfo.subtitle,
         params: {
           page: '2',
@@ -252,12 +251,27 @@
       },
       {
         type: 'goods', // 商品海报
-        title: state.goodsInfo.title, // 商品标题
-        image: sheep.$url.cdn(state.goodsInfo.image), // 商品主图
-        price: state.goodsInfo.price[0], // 商品价格
+        title: state.goodsInfo.product.name, // 商品标题
+        image: sheep.$url.cdn(state.goodsInfo.product.pic), // 商品主图
+        price: state.goodsInfo.product.price, // 商品价格
         original_price: state.goodsInfo.original_price, // 商品原价
       },
     );
+  });
+
+  // 微信原生分享
+  onShareAppMessage(() => {
+    if (isEmpty(state.goodsInfo)) {
+      return {
+        title: '商品分享',
+        path: '/pages/goods/index',
+      };
+    }
+    return {
+      title: state.goodsInfo.product.name,
+      path: '/pages/goods/index?id=' + state.goodsInfo.id,
+      imageUrl: state.goodsInfo.product.pic,
+    };
   });
 
   onLoad(async (options) => {

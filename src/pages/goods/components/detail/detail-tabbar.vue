@@ -39,8 +39,13 @@
         <view
           v-if="shareIcon"
           class="detail-tabbar-item ss-flex ss-flex-col ss-row-center ss-col-center"
-          @tap="parseExcel()"
+          style="position: relative;"
         >
+          <button
+            open-type="share"
+            class="ss-reset-button"
+            style="position: absolute; width: 100%; height: 100%; z-index: 1; opacity: 0;"
+          ></button>
           <image
             class="item-icon"
             :src="sheep.$url.static('/static/img/shop/goods/share.png')"
@@ -70,7 +75,7 @@
   import { computed, reactive } from 'vue';
   import sheep from '@/sheep';
   import { showShareModal } from '@/sheep/hooks/useModal';
-  import * as XLSX from 'xlsx'
+  // import * as XLSX from 'xlsx'
   // 数据
   const state = reactive({});
 
@@ -144,54 +149,8 @@
     // });
   };
 
-  const exportExcel = () => {
-    const data = [
-      { 姓名: '张三', 年龄: 18, 性别: '男' }
-    ];
-    const header = ['姓名', '年龄', '性别'];
-
-    const worksheetData = [header, ...data.map(item => header.map(key => item[key]))];
-
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-
-    const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    console.log('path:', uni.env.USER_DATA_PATH)
-    uni.getFileSystemManager().writeFile({
-      filePath: `${uni.env.USER_DATA_PATH}/example.xlsx`,
-      data: wbout,
-      success: function(res) {
-        console.log('save-path:', res)
-        uni.showToast({
-          title: '导出成功',
-        });
-        //直接预览文件
-        uni.openDocument({
-          filePath: `${uni.env.USER_DATA_PATH}/example.xlsx`,
-        });
-      },
-      fail: function(res) {
-        console.log('res:', res)
-        uni.showToast({
-          title: '导出失败',
-          icon: 'none',
-        });
-      },
-    });
-  }
-
-  const parseExcel = () => {
-    uni.chooseMessageFile({
-      count: 1,
-      success: function (res) {
-        const tempFile = res.tempFiles[0]
-        console.log('tempFile:', tempFile)
-        readFile(tempFile.path)
-      }
-    })
-  }
-  const readFile = (filePath) => {
+  
+    const readFile = (filePath) => {
     console.log('readFilePath:', filePath)
     uni.getFileSystemManager().readFile({
       filePath: filePath,
