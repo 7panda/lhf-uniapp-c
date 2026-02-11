@@ -7,7 +7,7 @@
         <view class="banner-content" v-if="bannerList.length">
           <swiper class="swiper-content" :indicator-dots="bannerIndicatorDots" :autoplay="true">
             <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">
-              <image :src="it.src" class="img" />
+              <image :src="it.pic" class="img" />
             </swiper-item>
           </swiper>
         </view>
@@ -81,10 +81,11 @@
   const template = computed(() => sheep.$store('app').template.home);
   const bannerIndicatorDots = computed(() => bannerData.value.length > 1);
   const bannerList = computed(() => {
+   console.log('[banner] bannerData（Banlister）:', bannerData.value);
     return bannerData.value.map((item, index) => ({
-      id: item.product?.id ?? `${index}`,
-      src: sheep.$url.cdn(item.product?.pic),
-      title: item.product?.name || item.product?.title || '',
+      id: item.id ?? `${index}`,
+      pic: sheep.$url.cdn(item.pic),
+      title: item.title,
     }))
   });
 
@@ -116,49 +117,65 @@
   });
 
   function onGoodsLoaded(goods) {
+	console.log("goods st：")
+	console.log(goods)
+	
     // 获取当前日期的 day（几号）
     const now = new Date();
     const currentDay = now.getDate();
-
+    console.log('[banner] currentDay:', currentDay);
     // 提取日期字符串中的日期数字
     const extractDay = (dateStr) => {
+      // return ['2026-02-09', '2026', '02', '09', index: 0, input: '2026-02-09T14:32:44.357', groups: undefined]
+      // console.log('[banner] extractDay:', dateStr);
       if (!dateStr) return null;
       const match = String(dateStr).match(/(\d{4})-(\d{2})-(\d{2})/);
+      // console.log('[banner] match:', match);
       return match ? parseInt(match[3]) : null;
     };
 
     // 日期匹配函数
     const matchesDay = (item) => {
       // 优先级1：检查 product.updateTime 的 day
-      const updateTimeDay = extractDay(item.product?.updateTime);
+      // const updateTimeDay = extractDay(item.product?.updateTime);
+      const updateTimeDay = extractDay(item.updateTime);
+      // console.log('[banner] Checking item:', item.id, 'updateTimeDay:', updateTimeDay,"item:",item.updateTime);
       if (updateTimeDay !== null && updateTimeDay === currentDay) {
         return true;
       }
 
       // 优先级2：检查 product.createTime 的 day
-      const createTimeDay = extractDay(item.product?.createTime);
+      // const createTimeDay = extractDay(item.product?.createTime);
+      const createTimeDay = extractDay(item.createTime);
+      // console.log('[banner] Checking item:', item.id, 'createTimeDay:', createTimeDay,"item:",item.createTime);
       if (createTimeDay !== null && createTimeDay === currentDay) {
         return true;
       }
 
+
       // 优先级3：用 product.id % day 的个位数来匹配
-      if (item.product?.id !== undefined && item.product?.id !== null) {
-        const idModDay = (item.product.id % currentDay) % 10;
+      if (item.id !== undefined && item.id !== null) {
+        const idModDay = (item.id % currentDay) % 10;
+        // console.log('[banner] Checking item:', item.id, 'idModDay:', idModDay);
+       
         if (idModDay === currentDay % 10) {
           return true;
         }
       }
 
+
       return false;
     };
 
     // 筛选匹配的商品，有图片则取前5个
-    const filtered = (goods || []).filter(item => item.product?.pic && matchesDay(item)).slice(0, 5);
-
-    console.log('[banner] currentDay:', currentDay, 'matched:', filtered.length);
-
+    const filtered = (goods || []).filter(item =>
+     item.pic && matchesDay(item)).slice(0, 5);
+    console.log('[banner] bannerDataX:', bannerData.value);
     // 如果没有匹配到日期相关的商品，则降级为直接取有图片的前5个
-    bannerData.value = filtered.length > 0 ? filtered : (goods || []).filter(item => item.product?.pic).slice(0, 5);
+    // console.log("no filterd:",(goods || []).filter(item => item.pic).slice(0, 5));
+    // console.log("filtered:",filtered.length);
+    bannerData.value = filtered.length > 0 ? filtered : (goods || []).filter(item => item.pic).slice(0, 5);
+    console.log('[banner] bannerData:', bannerData.value);
   }
 
   onShareAppMessage(() => ({ ...shareData.value }));
