@@ -1,4 +1,5 @@
 <template>
+  <view>
   <s-layout title="分类" tabbar="/pages/category/category" :bgStyle="{ color: '#fff' }">
     <view class="s-category">
       <view class="three-level-wrap ss-flex ss-col-top" :style="[{ height: pageHeight + 'px' }]">
@@ -68,6 +69,7 @@
       </view>
     </view>
   </s-layout>
+  </view>
 </template>
 
 <script setup>
