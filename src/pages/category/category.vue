@@ -138,13 +138,13 @@
       if (Array.isArray(actualData)) {
         state.categoryList = {
           children: actualData,
-          style: 'first_one', // 默认样式
+          style: 'first_two', // 默认样式
         };
         console.log('✅ [分类数据] 已适配数组结构 -> 对象:', state.categoryList);
       } else if (actualData && typeof actualData === 'object') {
         // 如果是对象但缺少style，补充默认值
         state.categoryList = {
-          style: 'first_one',
+          style: 'first_two',
           ...actualData,
         };
         console.log('✅ [分类数据] 已加载对象结构:', state.categoryList);

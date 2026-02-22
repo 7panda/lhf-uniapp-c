@@ -1,4 +1,3 @@
-<!-- 页面  -->
 <template>
   <view>
     <view class="ss-flex flex-wrap">
@@ -9,7 +8,10 @@
           </view>
           <view class="goods-content">
             <view class="goods-title ss-line-1 ss-m-b-28">{{ item.title }}</view>
-            <view class="goods-price">￥{{ item.price[0] }}</view>
+            <view v-if="isValidPrice(item.price)" class="goods-price font-OPPOSANS">
+              <text class="price-unit">￥</text>
+              {{ isArray(item.price) ? item.price[0] : item.price }}
+            </view>
           </view>
         </view>
       </view>
@@ -19,6 +21,8 @@
 
 <script setup>
   import sheep from '@/sheep';
+  import { isArray } from 'lodash';
+
   const props = defineProps({
     data: {
       type: Object,
@@ -27,6 +31,21 @@
     activeMenu: [Number, String],
     pagination: Object,
   });
+
+  // 核心：判断价格是否有效（参考标准商品组件逻辑）
+  const isValidPrice = (price) => {
+    if (price == null) return false; // 排除 null / undefined
+    if (typeof price === 'number') return price > 0;
+    if (typeof price === 'string') {
+      const num = parseFloat(price);
+      return !isNaN(num) && num > 0;
+    }
+    if (isArray(price)) {
+      const first = price[0];
+      return isValidPrice(first);
+    }
+    return false;
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -56,9 +75,13 @@
 
       .goods-price {
         font-size: 24rpx;
-        font-family: OPPOSANS;
         font-weight: 500;
         color: #e1212b;
+        
+        .price-unit {
+          font-size: 26rpx;
+          margin-right: 4rpx;
+        }
       }
     }
 
