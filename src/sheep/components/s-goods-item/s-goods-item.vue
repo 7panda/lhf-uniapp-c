@@ -21,13 +21,17 @@
         </view>
         <view class="ss-flex">
           <view class="ss-flex ss-col-center">
-            <view
+            <!-- <view
               class="price-text ss-flex ss-col-center"
               :style="[{ color: priceColor }]"
-              v-if="price && Number(price) > 0"
+              v-if="price && Number(price) > 0 && price !== null && price !== 'undefined'"
             >
               ￥{{ price }}
-            </view>
+            </view> -->
+
+            <view v-if="typeof price === 'number' && price > 0" class="price-text ss-flex ss-col-center" :style="{ color: priceColor }">
+  ￥{{ price }} 
+</view>
 <!--            <view v-if="score && Number(price) > 0">+</view>-->
 <!--            <view class="price-text ss-flex ss-col-center" v-if="score">-->
 <!--              <image-->
