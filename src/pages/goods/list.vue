@@ -1,4 +1,5 @@
 <template>
+  <view>
   <s-layout
     navbar="normal"
     :leftWidth="0"
@@ -113,6 +114,7 @@
     <s-empty v-if="state.pagination.total === 0" icon="/static/soldout-empty.png" text="暂无商品">
     </s-empty>
   </s-layout>
+  </view>
 </template>
 
 <script setup>
