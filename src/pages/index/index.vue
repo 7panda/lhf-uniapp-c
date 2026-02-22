@@ -20,6 +20,7 @@
                 class="img" 
                 @load="onImageLoad(it.id)"
                 @error="onImageError(it.id)"
+                mode="aspectFit"
               />
             </swiper-item>
           </swiper>
@@ -270,8 +271,8 @@ function setOpenShare() {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10rpx 0 24rpx 0;
-  padding: 0 20rpx; // 内边距，避免贴边
+  margin: 0rpx 0rpx;
+  padding: 0 5rpx; // 内边距，避免贴边
 }
 
 .swiper-content {
@@ -283,11 +284,19 @@ function setOpenShare() {
   position: relative;
 }
 
-.img {
+/* 轮播图 item 居中布局 */
+.swiper-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  background-color: #f8fafc; // 填充两侧留白区域
+}
+
+.img {
+  height: 100%;      /* 高度占满 */
+  width: auto;       /* 宽度自适应，保持比例 */
   display: block;
   opacity: 0;
   animation: imgFadeIn 0.6s ease-in forwards;
