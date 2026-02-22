@@ -28,11 +28,11 @@
         </view>
         <view class="ss-col-bottom">
           <view
-            v-if="goodsFields.score_price?.show"
+            v-if="goodsFields.score_price?.show && (hasValidPrice || data.score !== undefined)"
             class="md-goods-price ss-m-t-16 font-OPPOSANS ss-m-r-10 ss-flex"
             :style="[{ color: goodsFields.score_price.color }]"
           >
-            <view>{{ Number(data.price[0]) > 0 ? '￥' + data.price[0] + '+' : '' }}</view>
+            <view v-if="hasValidPrice">{{ priceUnit + data.price[0] }}+</view>
             <image
               :src="sheep.$url.static('/static/img/shop/goods/score1.svg')"
               class="score-img"
@@ -89,11 +89,11 @@
         <view>
           <view class="ss-m-t-10">
             <view
-              v-if="goodsFields.score_price?.show"
+              v-if="goodsFields.score_price?.show && (hasValidPrice || data.score !== undefined)"
               class="lg-goods-price ss-m-r-12 ss-flex ss-col-bottom font-OPPOSANS"
               :style="[{ color: goodsFields.score_price.color }]"
             >
-              <view>{{ Number(data.price[0]) > 0 ? '￥' + data.price[0] + '+' : '' }}</view>
+              <view v-if="hasValidPrice">{{ priceUnit + data.price[0] }}+</view>
               <image
                 :src="sheep.$url.static('/static/img/shop/goods/score1.svg')"
                 class="score-img"
@@ -148,8 +148,11 @@
             </view>
           </slot>
           <view class="ss-flex ss-col-bottom ss-p-l-16 ss-p-r-16 font-OPPOSANS">
-            <view class="sl-goods-price ss-m-r-12 ss-flex">
-              <view>{{ Number(data.price[0]) > 0 ? '￥' + data.price[0] + '+' : '' }}</view>
+            <view
+              v-if="hasValidPrice || data.score !== undefined"
+              class="sl-goods-price ss-m-r-12 ss-flex"
+            >
+              <view v-if="hasValidPrice">{{ priceUnit + data.price[0] }}+</view>
               <image
                 :src="sheep.$url.static('/static/img/shop/goods/score1.svg')"
                 class="score-img"
@@ -176,6 +179,7 @@
     </view>
   </view>
 </template>
+
 <script setup>
   import { computed, getCurrentInstance } from 'vue';
   import sheep from '@/sheep';
@@ -251,6 +255,18 @@
       default: '#999999',
     },
   });
+
+  // ✅ 判断是否有有效价格：必须是数组，且第一个元素为 > 0 的数字
+  const hasValidPrice = computed(() => {
+    const priceArr = props.data.price;
+    return (
+      Array.isArray(priceArr) &&
+      priceArr.length > 0 &&
+      typeof priceArr[0] === 'number' &&
+      priceArr[0] > 0
+    );
+  });
+
   // 组件样式
   const elStyles = computed(() => {
     return {
@@ -261,10 +277,12 @@
       'border-bottom-right-radius': props.bottomRadius + 'px',
     };
   });
+
   const emits = defineEmits(['click', 'getHeight']);
   const onClick = () => {
     emits('click');
   };
+
   // 格式化销量、库存信息
   const salesAndStock = computed(() => {
     let text = [];
@@ -272,6 +290,7 @@
     text.push(formatStock(props.data.stock_show_type, props.data.stock));
     return text.join(' | ');
   });
+
   // 获取实时卡片高度
   const { proxy } = getCurrentInstance();
   const elId = `sheep_${Math.ceil(Math.random() * 10e5).toString(36)}`;
@@ -368,15 +387,12 @@
       font-size: 28rpx;
       font-weight: 500;
       color: #333333;
-      // line-height: 36rpx;
-      // width: 410rpx;
     }
     .lg-goods-subtitle {
       font-size: 24rpx;
       font-weight: 400;
       color: #999999;
       line-height: 30rpx;
-      // width: 410rpx;
     }
 
     .lg-goods-price {
@@ -401,6 +417,7 @@
       width: 100%;
     }
   }
+
   .sl-goods-card {
     overflow: hidden;
     position: relative;
@@ -446,11 +463,13 @@
       color: #ffffff;
     }
   }
+
   .goods-origin-price {
     font-size: 20rpx;
     color: #c4c4c4;
     text-decoration: line-through;
   }
+
   .score-img {
     width: 36rpx;
     height: 36rpx;
