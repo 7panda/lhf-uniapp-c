@@ -28,7 +28,7 @@
           class="xs-goods-price font-OPPOSANS"
           :style="[{ color: goodsFields.price.color }]"
         >
-          <text class="price-unit ss-font-24">{{ priceUnit }}</text>
+          <text class="price-unit ss-font-26">{{ priceUnit }}</text>
           {{ isArray(data.price) ? data.price[0] : data.price }}
         </view>
       </view>
@@ -53,7 +53,7 @@
           class="sm-goods-price font-OPPOSANS"
           :style="[{ color: goodsFields.price.color }]"
         >
-          <text class="price-unit ss-font-24">{{ priceUnit }}</text>
+          <text class="price-unit ss-font-26">{{ priceUnit }}</text>
           {{ isArray(data.price) ? data.price[0] : data.price }}
         </view>
       </view>
@@ -105,7 +105,7 @@
             class="md-goods-price ss-m-t-16 font-OPPOSANS ss-m-r-10"
             :style="[{ color: goodsFields.price.color }]"
           >
-            <text class="price-unit ss-font-24">{{ priceUnit }}</text>
+            <text class="price-unit ss-font-26">{{ priceUnit }}</text>
             {{ isArray(data.price) ? data.price[0] : data.price }}
           </view>
 
@@ -173,7 +173,7 @@
               class="lg-goods-price ss-m-r-12 ss-flex ss-col-bottom font-OPPOSANS"
               :style="[{ color: goodsFields.price.color }]"
             >
-              <text class="ss-font-24">{{ priceUnit }}</text>
+              <text class="ss-font-26">{{ priceUnit }}</text>
               {{ isArray(data.price) ? data.price[0] : data.price }}
             </view>
             <view
@@ -230,7 +230,7 @@
               class="sl-goods-price ss-m-r-12"
               :style="[{ color: goodsFields.price.color }]"
             >
-              <text class="price-unit ss-font-24">{{ priceUnit }}</text>
+              <text class="price-unit ss-font-26">{{ priceUnit }}</text>
               {{ isArray(data.price) ? data.price[0] : data.price }}
             </view>
             <view
@@ -254,7 +254,7 @@ import sheep from '@/sheep';
 import { formatSales } from '@/sheep/hooks/useGoods';
 import { isArray } from 'lodash';
 
-// ✅ 核心：判断价格是否有效
+// 核心：判断价格是否有效
 function isValidPrice(price) {
   if (price == null) return false; // 排除 null / undefined
   if (typeof price === 'number') return price > 0;
@@ -437,7 +437,8 @@ function calculatePanelHeight(e) {
     background-color: #f5f5f5;
   }
   .price-unit {
-    margin-right: -4px;
+    font-size: 32rpx;
+    // margin-right: 1rpx;
   }
   .sales-text {
     display: table;
