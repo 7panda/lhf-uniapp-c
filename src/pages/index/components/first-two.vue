@@ -3,7 +3,7 @@
     <view class="ss-flex flex-wrap">
       <view class="goods-box" v-for="item in pagination?.data" :key="item.id">
         <view @click="sheep.$router.go('/pages/goods/index', { id: item.id })">
-          <view class="goods-img">
+          <view class="goods-img-wrap">
             <image class="goods-img" :src="sheep.$url.cdn(item.image)" mode="aspectFit"></image>
           </view>
           <view class="goods-content">
@@ -52,34 +52,54 @@
   .goods-box {
     width: calc((100% - 20rpx) / 2);
     margin-bottom: 20rpx;
+    background: #ffffff;
+    border-radius: 12rpx;
+    overflow: hidden;
+    box-shadow: 0px 4rpx 24rpx rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
 
-    .goods-img {
+    &:active {
+      transform: scale(0.98);
+      box-shadow: 0px 2rpx 12rpx rgba(0, 0, 0, 0.08);
+    }
+
+    .goods-img-wrap {
       width: 100%;
       height: 246rpx;
-      border-radius: 10rpx 10rpx 0px 0px;
+      background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+      border-radius: 12rpx 12rpx 0px 0px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .goods-img {
+        width: 100%;
+        // height: 100%;
+      }
     }
 
     .goods-content {
       width: 100%;
-      background: #ffffff;
-      box-shadow: 0px 0px 20rpx 4rpx rgba(199, 199, 199, 0.22);
-      padding: 20rpx 0 32rpx 16rpx;
+      padding: 20rpx 16rpx 28rpx;
       box-sizing: border-box;
-      border-radius: 0 0 10rpx 10rpx;
+      background: #ffffff;
 
       .goods-title {
         font-size: 26rpx;
-        font-weight: bold;
+        font-weight: 600;
         color: #333333;
+        line-height: 36rpx;
       }
 
       .goods-price {
-        font-size: 24rpx;
-        font-weight: 500;
+        font-size: 28rpx;
+        font-weight: 600;
         color: #e1212b;
+        line-height: 40rpx;
         
         .price-unit {
-          font-size: 26rpx;
+          font-size: 28rpx;
           margin-right: 4rpx;
         }
       }
