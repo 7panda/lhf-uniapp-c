@@ -8,11 +8,13 @@
           <swiper 
             class="swiper-content" 
             :style="{ height: swiperHeight }"
+            :current="bannerCurrent"
             :indicator-dots="bannerIndicatorDots" 
             :autoplay="true"
             circular
             interval="3000"
             duration="500"
+            @change="onSwiperChange"
           >
             <swiper-item v-for="it in bannerList" :key="it.id" @tap="clickBanner(it)">
               <image 
@@ -24,6 +26,13 @@
               />
             </swiper-item>
           </swiper>
+
+          <view v-if="bannerList.length > 1" class="banner-nav banner-nav-left" @tap="prevBanner">
+            <text class="banner-nav-text">‹</text>
+          </view>
+          <view v-if="bannerList.length > 1" class="banner-nav banner-nav-right" @tap="nextBanner">
+            <text class="banner-nav-text">›</text>
+          </view>
         </view>
         <!-- 分类区域被注释，保留结构 -->
         <template v-if="false">
@@ -57,6 +66,7 @@ import weixin from '@/sheep/libs/sdk-h5-weixin';
 const categoryList = ref([]);
 const shareData = ref($share.getShareInfo());
 const bannerData = ref([]);
+const bannerCurrent = ref(0);
 const barHeight = ref('0px');
 const swiperHeight = ref('30vh'); // 默认值，后续动态计算
 
@@ -153,6 +163,24 @@ function onImageError(id) {
   console.warn(`[Banner] Image load failed for ID: ${id}`);
 }
 
+function onSwiperChange(e) {
+  const current = e?.detail?.current;
+  bannerCurrent.value = Number.isInteger(current) ? current : 0;
+}
+
+function prevBanner() {
+  const total = bannerList.value.length;
+  if (total <= 1) return;
+  bannerCurrent.value = (bannerCurrent.value - 1 + total) % total;
+}
+
+function nextBanner() {
+  const total = bannerList.value.length;
+  if (total <= 1) return;
+  bannerCurrent.value = (bannerCurrent.value + 1) % total;
+}
+
+// 轮播图切换 和筛选
 async function onGoodsLoaded(goods) {
   const now = new Date();
   const currentDay = now.getDate();
@@ -164,6 +192,8 @@ async function onGoodsLoaded(goods) {
   };
 
   const matchesDay = (item) => {
+    return True; // 默认匹配所有
+
     const updateTimeDay = extractDay(item.updateTime);
     if (updateTimeDay !== null && updateTimeDay === currentDay) return true;
     const createTimeDay = extractDay(item.createTime);
@@ -178,6 +208,7 @@ async function onGoodsLoaded(goods) {
   let candidates = (goods || []).filter(item => item.pic);
   if (!candidates.length) {
     bannerData.value = [];
+    bannerCurrent.value = 0;
     return;
   }
 
@@ -213,11 +244,18 @@ async function onGoodsLoaded(goods) {
     evaluated.sort((a, b) => b.score - a.score);
     const selected = evaluated.slice(0, 5).map(e => e.item);
     bannerData.value = selected.length > 0 ? selected : candidates.slice(0, 5);
+    if (bannerCurrent.value >= bannerData.value.length) {
+      bannerCurrent.value = 0;
+    }
   } catch (e) {
     console.error('[Banner] Evaluation error:', e);
     bannerData.value = candidates.slice(0, 5); // 降级
+    if (bannerCurrent.value >= bannerData.value.length) {
+      bannerCurrent.value = 0;
+    }
   }
 }
+
 
 onShareAppMessage(() => ({ ...shareData.value }));
 
@@ -273,6 +311,7 @@ function setOpenShare() {
   align-items: center;
   margin: 0rpx 0rpx;
   padding: 0 5rpx; // 内边距，避免贴边
+  position: relative;
 }
 
 .swiper-content {
@@ -305,6 +344,34 @@ function setOpenShare() {
 .img:active {
   transform: scale(0.97);
   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+}
+
+.banner-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 26rpx;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.banner-nav-left {
+  left: 28rpx;
+}
+
+.banner-nav-right {
+  right: 28rpx;
+}
+
+.banner-nav-text {
+  color: #ffffff;
+  font-size: 36rpx;
+  line-height: 1;
 }
 
 @keyframes imgFadeIn {

@@ -19,6 +19,9 @@ $ npm install --registry=https://registry.npmmirror.com
 npm run dev:h5
 ```
 
+# 生产构建（生成 dist/build/h5 目录）
+npm run build:h5
+
 ## 项目结构
 
 ```
@@ -53,3 +56,15 @@ npm run dev:h5
 ├── uni_modules             // dcloud第三方插件
 
 ```
+
+
+参数说明：
+ss-font-24 是在 _tools.scss:248-255 里通过 @for 循环生成的，范围是 ss-font-20 到 ss-font-50，作用是设置字体大小为对应的 rpx。
+所以 ss-font-24 等价于 font-size: 24rpx;。
+
+
+first_one、first_two、second_one、third_one 对应的是不同的展示组件与数据来源，区别如下：
+first_one：使用 first-one.vue，渲染 pagination.data 的商品列表，当前已改成两列；点击进商品详情。
+first_two：使用 first-two.vue，同样渲染 pagination.data，本身就是两列卡片样式，图+标题+价格。
+second_one：使用 second-one.vue，渲染当前一级分类下的子分类 props.data.children[activeMenu].children，是三列子类目入口，不是商品分页。
+third_one：使用 third-one.vue，先按一级分类下的子分类分组，再渲染每组的子类目入口，也是三列，不走商品分页。

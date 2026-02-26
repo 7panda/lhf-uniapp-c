@@ -2,8 +2,8 @@
     "name" : "华飞茗品全屋家居",
     "appid" : "__UNI__679B791",
     "description" : "应用描述",
-    "versionName" : "1.0.8",
-    "versionCode" : 108,
+    "versionName" : "1.0.9",
+    "versionCode" : 109,
     "transformPx" : false,
     "app-plus" : {
         "usingComponents" : true,
@@ -172,7 +172,7 @@
         "versionCode" : 100
     },
     "mp-weixin" : {
-        "appid" : "wx30cada685473552f",
+        "appid" : "wxc1924de03a690107",
         "setting" : {
             "urlCheck" : false,
             "minified" : true,
@@ -203,7 +203,7 @@
         "template" : "index.html",
         "router" : {
             "mode" : "hash",
-            "base" : "/uni/"
+            "base" : "/"
         },
         "sdkConfigs" : {
             "maps" : {}
@@ -211,7 +211,7 @@
         "async" : {
             "timeout" : 20000
         },
-        "title" : "若依mall",
+        "title" : "商城",
         "optimization" : {
             "treeShaking" : {
                 "enable" : true
